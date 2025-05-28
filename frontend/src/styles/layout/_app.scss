@@ -1,0 +1,25 @@
+@use '../utils/variables.scss' as *;
+@use '../utils/functions' as *;
+
+#app{
+  min-width: 100%;
+  min-height: 100vh;
+
+  background-color: var(--main-theme-color-200);
+
+  @include midScreen{
+    min-width: $md;
+  }
+
+  @include bigScreen{
+    min-width: 850px;
+  }
+
+  @include largeScreen{
+    min-width: 1000px;
+  }
+
+  @include xlargeScreen{
+    min-width: 1200px;
+  }
+}

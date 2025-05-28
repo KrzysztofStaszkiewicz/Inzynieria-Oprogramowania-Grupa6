@@ -1,0 +1,42 @@
+@use './variables' as *;
+
+@mixin smallScreen{
+  @media only screen and (min-width: $sm){
+    @content;
+  }
+}
+
+@mixin midScreen{
+  @media only screen and (min-width: $md){
+    @content;
+  }
+}
+
+@mixin bigScreen{
+  @media only screen and (min-width: $lg){
+    @content;
+  }
+}
+
+@mixin largeScreen{
+  @media only screen and (min-width: $xl){
+    @content;
+  }
+}
+
+@mixin xlargeScreen{
+  @media only screen and (min-width: $xxl){
+    @content;
+  }
+}
+
+@mixin flexCenter{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin gridCenter{
+  display: grid;
+  place-items: center;
+}

@@ -1,0 +1,9 @@
+@use '../utils/functions' as *;
+
+body{
+  @include flexCenter;
+  flex-direction: column;
+
+  min-width: 100vw;
+  min-width: 100dvw;
+}
