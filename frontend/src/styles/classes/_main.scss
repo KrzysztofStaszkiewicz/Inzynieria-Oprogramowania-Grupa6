@@ -1,0 +1,22 @@
+@use '../utils/functions.scss' as *;
+@use '../utils/variables.scss' as *;
+
+.main{
+  &__image{
+    @include midScreen{
+      max-width: $md;
+    }
+
+    @include bigScreen{
+      max-width: 850px;
+    }
+
+    @include largeScreen{
+      max-width: 1000px;
+    }
+
+    @include xlargeScreen{
+      max-width: 1200px;
+    }
+  }
+}

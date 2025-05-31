@@ -27,6 +27,7 @@
     }
 
     &-account{
+        margin: auto;
         padding-right: 2rem;
 
         &-login{
@@ -38,8 +39,6 @@
                 flex-direction: row;
                 gap: 2rem;
             }
-
-            height: 100%;
 
             &-button{
                 @include main-font-400;

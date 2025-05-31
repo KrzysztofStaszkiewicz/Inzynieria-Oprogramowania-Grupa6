@@ -1,6 +1,7 @@
 @use '../utils/functions' as *;
 
 header{
+  position: relative;
   display: flex;
   
   min-width: 100%;
