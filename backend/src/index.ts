@@ -11,15 +11,23 @@ app.use(express.json());
 
 const pool = new Pool({ connectionString: process.env.DB_URL });
 
-app.get('/api/users', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users');
-    res.json(result.rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Database error' });
+pool.connect((err, client, release) => {
+  if (err) {
+    return console.error('Błąd połączenia z bazą:', err.stack);
   }
+  console.log('Połączono z bazą danych!');
+  release();
 });
+
+app.get('/offers/get', async (req, res) => {
+  try{
+    const result = await pool.query('SELECT * FROM rejsy');
+    res.json(result.rows);
+  } catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Database error'});
+  }
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
