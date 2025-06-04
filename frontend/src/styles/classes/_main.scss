@@ -26,10 +26,7 @@
       pointer-events: none;
       z-index: -1;
       
-      background: linear-gradient(
-        var(--main-theme-color-400) 69%, 
-        var(--main-theme-color-200) 100%
-      );
+      background: var(--main-theme-gradient-color-100);
       opacity: .2;
     }
 

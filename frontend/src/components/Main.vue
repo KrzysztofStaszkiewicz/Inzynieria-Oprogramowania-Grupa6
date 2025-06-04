@@ -1,19 +1,17 @@
 <template>
-    <main>
-        <div class="main__image">
-            <img :src="landing_image" alt="Zdjecie jachtu">
-        </div>
-        <div class="main-offers">
-            <ul class="main-offers-list">
-                <LandingOffer
-                    v-for="offer in offers" :key="offer.id" 
-                    :name="offer.name" 
-                    :price="offer.price" 
-                    :discount="offer.discount" >
-                </LandingOffer>
-            </ul>
-        </div>
-    </main>
+    <div class="main__image">
+        <img :src="landing_image" alt="Zdjecie jachtu">
+    </div>
+    <div class="main-offers">
+        <ul class="main-offers-list">
+            <LandingOffer
+                v-for="offer in offers" :key="offer.id" 
+                :name="offer.name" 
+                :price="offer.price" 
+                :discount="offer.discount" >
+            </LandingOffer>
+        </ul>
+    </div>
 </template>
 
 <script setup lang="ts">

@@ -11,6 +11,11 @@ $xxl: 1600px;
   --main-theme-color-400: rgba(255, 255, 255, 100);
   --main-theme-color-500: rgba(0, 32, 56, 22);
 
+  --main-theme-gradient-color-100: linear-gradient(
+    var(--main-theme-color-400) 69%, 
+    var(--main-theme-color-200) 100%
+  );
+
   --main-font-color-100: rgba(0, 45, 78, 31);
   --main-font-color-200: rgba(0, 0, 0, 0);
   --main-font-color-300: rgba(255, 255, 255, 100);
