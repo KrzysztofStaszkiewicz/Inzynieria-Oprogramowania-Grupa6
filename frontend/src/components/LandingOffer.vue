@@ -3,6 +3,20 @@
     <div class="main-offers-list-option__image">
       <img :src="image_src" :alt="image_alt">
     </div>
+    <div class="main-offers-list-option-content">
+      <div class="main-offers-list-option-content-name">
+        <span class="main-offers-list-option-content-name__text">{{ name }}</span>
+      </div>
+      <div class="main-offers-list-option-content-price">
+        <span class="main-offers-list-option-content-price__text">{{ price }}</span>
+      </div>
+      <div v-if="discount > 0" class="main-offers-list-option-content-discount">
+        <span class="main-offers-list-option-content-discount__text">{{ Math.floor(price - price * discount / 100) }}</span>
+      </div>
+      <button class="main-offers-list-option-content-button">
+        <span class="main-offers-list-option-content-button__text">Złóż rezerwację</span>
+      </button>
+    </div>
   </li>
 </template>
 
