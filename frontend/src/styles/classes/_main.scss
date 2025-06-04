@@ -1,24 +1,15 @@
-@use '../utils/functions.scss' as *;
-@use '../utils/variables.scss' as *;
+@use '../utils/functions' as *;
+@use '../utils/variables' as *;
+@use '../base/typography' as *;
 
 .main{
-  // &__image{
-  //   @include midScreen{
-  //     max-width: $md;
-  //   }
-
-  //   @include bigScreen{
-  //     max-width: 850px;
-  //   }
-
-  //   @include largeScreen{
-  //     max-width: 1000px;
-  //   }
-
-  //   @include xlargeScreen{
-  //     max-width: 1200px;
-  //   }
-  // }
+  &__image{
+    img{
+      min-width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+    }
+  }
 
   &-offers{
     position: relative;
@@ -54,23 +45,32 @@
         overflow: hidden;
 
         &__image{
+          aspect-ratio: 1 / 1;
+
           img{
-            aspect-ratio: 1 / 1;
+            aspect-ratio: inherit;
           }
         }
 
         &-content{
+          @include main-font-400;
+
           display: grid;
           grid-template-columns: repeat(5, 1fr);
           grid-template-areas: 
             "name name name prc dsc"
             "name name name btn btn";
           row-gap: .5rem;
-          padding: .25rem;
+          margin-top: -4px;
+          padding: .5rem .75rem .75rem .75rem;
           background-color: var(--main-theme-color-400);
 
             &-name{
               grid-area: name;
+
+              &__text{
+                font-size: 1.5rem;
+              }
             }
 
             &-price{
@@ -80,21 +80,37 @@
               }
 
               grid-area: prc;
+              
+              
+              font-size: 1.25rem;
               text-align: right;
             }
 
             &-discount{
+              
               &::after{
                 content: '\20AC';
                 margin-left: 1px;
               }
 
               grid-area: dsc;
+              
               text-align: center;
+              text-decoration: line-through;
+              font-size: 1.25rem;
+              color: var(--main-font-color-400);
             }
 
             &-button{
+              @include main-font-300;
+
               grid-area: btn;
+
+              padding: .25rem .5rem;
+              background-color: var(--main-theme-color-200);
+              border-radius: .5rem;
+
+              color: var(--main-font-color-300);
             }
         }
       }
