@@ -17,7 +17,7 @@
     </div>
     <div class="header-account">
       <div class="header-account-login">
-        <button class="header-account-login-button">
+        <button @click="login_pressed" class="header-account-login-button">
           <span class="header-account-login-button__text">Zaloguj się</span>
         </button>
         <div class="header-account-register">
@@ -42,5 +42,9 @@ function main_pressed(){
 
 function list_pressed(){
   router.push('/lista-wycieczek')
+}
+
+function login_pressed(){
+  router.push('log_in')
 }
 </script>
