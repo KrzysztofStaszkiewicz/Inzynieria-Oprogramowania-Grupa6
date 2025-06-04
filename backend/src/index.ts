@@ -21,7 +21,7 @@ pool.connect((err, client, release) => {
 
 app.get('/offers/get', async (req, res) => {
   try{
-    const result = await pool.query('SELECT * FROM rejsy');
+    const result = await pool.query('SELECT * FROM trip_offer LIMIT 3');
     res.json(result.rows);
   } catch(err){
     console.log(err);
