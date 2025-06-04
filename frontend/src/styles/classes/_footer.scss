@@ -1,0 +1,73 @@
+@use '../base/typography' as *;
+
+.footer{
+  &-logo{
+    min-height: inherit;
+    aspect-ratio: 1 / 1;
+
+    &__image{
+      min-width: 100%;
+    }
+  }
+
+  &-description{
+    margin: auto 0;
+    max-width: 400px;
+
+    &-title{
+      @include main-font-700;
+
+      &__text{
+        color: var(--main-font-color-300);
+      }
+    }
+
+    &-content{
+      @include main-font-400;
+
+      &__text{
+        color: var(--main-font-color-300);
+      }
+    }
+  }
+
+  &-separator{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    
+    &__hr{
+      width: 1px;
+      border: none;
+      background-color: var(--main-theme-color-500);
+    }
+  }
+
+  &-links{
+    margin: auto 0;
+    padding-left: 1.5rem;
+
+    &-list{
+      @include main-font-700;
+
+      &-option{
+        &__text{
+          color: var(--main-font-color-300);
+        }
+      }
+    }
+  }
+
+  &-copyrights{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: .25rem .5rem;
+
+    &__text{
+      @include main-font-300;
+
+      font-size: .75rem;
+      color: var(--main-font-color-300);
+    }
+  }
+}
