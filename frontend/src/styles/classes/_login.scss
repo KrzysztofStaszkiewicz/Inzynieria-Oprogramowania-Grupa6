@@ -1,7 +1,7 @@
 @use '../base/typography' as *;
 @use '../utils/functions' as *;
 
-.login{
+.login, .register{
   display: grid;
   place-items: center;
   padding-top: 4rem;
@@ -17,14 +17,67 @@
     background-color: var(--main-theme-color-200);
     color: var(--main-font-color-300);
 
+    @include smallScreen{
+      min-width: 300px;
+    }
+
+    @include midScreen{
+      min-width: 350px;
+    }
+
+    @include bigScreen{
+      min-width: 400px;
+    }
+
+    @include largeScreen{
+      min-width: 500px;
+    }
+
+    @include xlargeScreen{
+      min-width: 600px;
+    }
+
     &-title{
+      padding: .5rem 0;
       text-align: center;
+      font-size: 1.5rem;
       font-weight: 700;
     }
 
-    &-username, &-password{
+    &-separator{
+      height: 1px;
+
+      &__hr{
+        height: 100%;
+        border: none;
+        background-color: var(--main-theme-color-500);
+      }
+    }
+
+    &-username, &-password, &-email, &-phone, &-name-first, &-name-last{
       display: flex;
       flex-direction: column;
+
+      &__input{
+        @include main-font-400;
+
+        width: 66%;
+        margin-top: .25rem;
+        padding: .25rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: .5rem;
+      }
+    }
+
+    &-name{
+      display: flex;
+
+      &-first, &-last{
+        &__input{
+          width: 85%;
+        }
+      }
     }
 
     &-submit{

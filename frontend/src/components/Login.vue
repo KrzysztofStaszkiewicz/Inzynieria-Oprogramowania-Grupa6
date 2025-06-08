@@ -4,6 +4,9 @@
       <div class="login-form-title">
         <span class="login-form-title__text">Logowanie</span>
       </div>
+      <div class="login-form-separator">
+        <hr class="login-form-separator__hr" />
+      </div>
       <div class="login-form-username">
         <label for="username" class="login-form-username__text">Email lub numer telefonu</label>
         <input id="username" class="login-form-username__input" type="text" v-model="name" required></input>
