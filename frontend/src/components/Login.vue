@@ -57,8 +57,8 @@ async function get_login(email: string, phone: number) {
 
       const userData = {
         id: user.user.id,
-        firstName: user.user.first_name,
-        lastName: user.user.last_name
+        first_name: user.user.first_name,
+        last_name: user.user.last_name
       };
 
       localStorage.setItem('is_logged', 'true');

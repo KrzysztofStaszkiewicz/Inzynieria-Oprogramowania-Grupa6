@@ -16,7 +16,7 @@
       </ul>
     </div>
     <div class="header-account">
-      <div class="header-account-login">
+      <div v-if="!is_logged" class="header-account-login">
         <button @click="login_pressed" class="header-account-login-button">
           <span class="header-account-login-button__text">Zaloguj się</span>
         </button>
@@ -26,6 +26,11 @@
           </button>
         </div>
       </div>
+      <div v-if="is_logged" class="header-account-info">
+        <div class="header-account-info-name">
+          <span v-if="user_data" class="header-account-info-name__text">{{ user_data.first_name }}, {{ user_data.last_name }}</span>
+        </div>
+      </div>
     </div>
   </header>
 </template>
@@ -33,8 +38,18 @@
 <script setup lang="ts">
 import logo from '../assets/logo.png'
 
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
+
+interface UserData {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
+const is_logged = ref<boolean>(false);
+const user_data = ref<UserData | null>(null);
 
 function main_pressed(){
   router.push('/');
@@ -51,4 +66,30 @@ function login_pressed(){
 function register_pressed(){
   router.push('/register')
 }
+
+onMounted(() => {
+  is_logged.value = localStorage.getItem('is_logged') === 'true';
+
+  if(is_logged.value){
+    const stored_user_data = localStorage.getItem("user_data");
+    
+    if(stored_user_data){
+      try{
+        user_data.value = JSON.parse(stored_user_data) as UserData;
+      } catch(err){
+        console.error('Błąd podczas parsowania user_data z localStorage:', err);
+
+        localStorage.removeItem('is_logged');
+        localStorage.removeItem('user_data');
+        is_logged.value = false;
+        user_data.value = null;
+      }
+    }
+  }
+  else{
+    user_data.value = null;
+  }
+  
+  console.log(user_data.value?.first_name);
+});
 </script>
