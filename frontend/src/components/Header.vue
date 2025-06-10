@@ -30,6 +30,9 @@
         <div class="header-account-info-name">
           <span v-if="user_data" class="header-account-info-name__text">{{ user_data.first_name }}, {{ user_data.last_name }}</span>
         </div>
+        <div class="header-account-info-arrow">
+          <i class="fa-solid fa-caret-down"></i>
+        </div>
       </div>
     </div>
   </header>
