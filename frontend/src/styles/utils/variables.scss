@@ -10,6 +10,8 @@ $xxl: 1600px;
   --main-theme-color-300: rgba(0, 0, 32, 13);
   --main-theme-color-400: rgba(255, 255, 255, 100);
   --main-theme-color-500: rgba(0, 32, 56, 22);
+  --main-theme-color-600: rgba(0, 81, 139, 54);
+  --main-theme-color-700: rgba(0, 72, 139, 55);
 
   --main-theme-gradient-color-100: linear-gradient(
     var(--main-theme-color-400) 69%, 
@@ -17,7 +19,8 @@ $xxl: 1600px;
   );
 
   --main-font-color-100: rgba(0, 45, 78, 31);
-  --main-font-color-200: rgba(0, 0, 0, 0);
+  --main-font-color-200: rgba(0, 0, 0, 100);
   --main-font-color-300: rgba(255, 255, 255, 100);
   --main-font-color-400: rgba(144, 144, 144, 56);
+  --main-font-color-500: rgba(240, 240, 240, 100);
 }

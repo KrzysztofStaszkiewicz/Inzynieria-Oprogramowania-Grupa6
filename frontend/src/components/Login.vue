@@ -64,7 +64,9 @@ async function get_login(email: string, phone: number) {
       localStorage.setItem('is_logged', 'true');
       localStorage.setItem('user_data', JSON.stringify(userData));
 
-      router.push('/');
+      router.push('/').then(() => {
+        location.reload();
+      });
     }
     else{
       // Czyszczenie localStorage w przypadku bledu

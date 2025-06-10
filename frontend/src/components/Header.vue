@@ -27,11 +27,19 @@
         </div>
       </div>
       <div v-if="is_logged" class="header-account-info">
-        <div class="header-account-info-name">
-          <span v-if="user_data" class="header-account-info-name__text">{{ user_data.first_name }}, {{ user_data.last_name }}</span>
+        <div @click="trigger_user_info" class="header-account-info-content">
+          <div class="header-account-info-content-name">
+            <span v-if="user_data" class="header-account-info-content-name__text">{{ user_data.first_name }}, {{ user_data.last_name }}</span>
+          </div>
+          <div class="header-account-info-content-arrow">
+            <i class="fa-solid fa-caret-down"></i>
+          </div>
         </div>
-        <div class="header-account-info-arrow">
-          <i class="fa-solid fa-caret-down"></i>
+        <div class="header-account-info-options">
+          <ul class="header-account-info-options-list" :class="show_user_options ? 'header-account-info-options-list-show' : 'header-account-info-options-list-hide'">
+            <li @click="reservations_pressed" class="header-account-info-options-list-option">Moje rezerwacje</li>
+            <li @click="log_out" class="header-account-info-options-list-option">Wyloguj sie</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -53,21 +61,38 @@ interface UserData {
 
 const is_logged = ref<boolean>(false);
 const user_data = ref<UserData | null>(null);
+const show_user_options = ref<boolean>(false);
 
 function main_pressed(){
   router.push('/');
 }
 
 function list_pressed(){
-  router.push('/lista-wycieczek')
+  router.push('/lista-wycieczek');
 }
 
 function login_pressed(){
-  router.push('/log_in')
+  router.push('/log_in');
 }
 
 function register_pressed(){
-  router.push('/register')
+  router.push('/register');
+}
+
+function reservations_pressed(){
+  router.push('/user/reservations');
+}
+
+function trigger_user_info(){
+  show_user_options.value = !show_user_options.value;
+}
+
+function log_out(){
+  localStorage.removeItem('is_logged');
+  localStorage.removeItem('user_data');
+  sessionStorage.clear();
+
+  location.reload();
 }
 
 onMounted(() => {

@@ -65,5 +65,115 @@
                 }
             }
         }
+
+        &-info{
+            position: relative;
+
+            &-content{
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: .5rem;
+                padding: .5rem .75rem;
+                background-color: var(--main-theme-color-200);
+                border-radius: .25rem;
+                z-index: 5;
+                cursor: pointer;
+
+                &-name{
+                    @include main-font-400;
+                    color: var(--main-font-color-500);
+
+                    font-size: 1.5rem;
+                }
+
+                &-arrow{
+                    margin-top: .25ch;
+                    font-size: 1.5rem;
+                    color: var(--main-font-color-500);
+                }
+            }
+
+            &-options{
+                position: absolute;
+                top: calc(100% - .1rem);
+                height: 5rem;
+                overflow: hidden;
+                width: 100%;
+                z-index: 1;
+
+                @include main-font-300;
+                color: var(--main-font-color-500);
+
+                &-list{
+                    position: absolute;
+                    top: -5rem;
+                    left: 0;
+                    display: flex;
+                    flex-direction: column;
+                    width: 100%;
+                    box-shadow: 0 4px 4px rgba(80, 80, 80, .2);
+                    
+                    &-option{
+                        padding: .25rem;
+                        padding-top: .35rem;
+                        background-color: var(--main-theme-color-600);
+                        cursor: pointer;
+
+                        &:hover{
+                            background-color: var(--main-theme-color-700);
+                        }
+
+                        &:first-child{
+                            position: relative;
+                            
+                            &::before{
+                                content: '';
+                                position: absolute;
+
+                                bottom: 0;
+                                left: .25rem;
+                                width: calc(100% - .5rem);
+                                height: 1px;
+
+                                background-color: var(--main-theme-color-200);
+                            }
+                        }
+
+                        &:last-child{
+                            border-radius: 0 0 .25rem .25rem;
+                        }
+                    }
+
+                    &-show{
+                        top: 0;
+                        animation: show_menu .5s ease-in-out;
+
+                        @keyframes show_menu {
+                            0%{
+                                top: -5rem;
+                            }
+                            100%{
+                                top: 0;
+                            }
+                        }
+                    }
+
+                    &-hide{
+                        top: -5rem;
+                        animation: hide_menu .5s ease-in-out;
+
+                        @keyframes hide_menu {
+                            0%{
+                                top: 0;
+                            }
+                            100%{
+                                top: -5rem;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
