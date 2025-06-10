@@ -31,14 +31,14 @@ app.get('/offers/get', async (req, res) => {
 });
 
 app.put('/user/register', async(req, res) => {
-  const { f_name, l_name, email, phone, password } = req.body;
+  const { first_name, last_name, email, phone, password } = req.body;
 
   try{
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS || '10'));
 
     const result = await pool.query(
       'INSERT INTO customer (first_name, last_name, email, phone_number, password) VALUES ($1, $2, $3, $4, $5)',
-      [f_name, l_name, email, phone, hashedPassword]
+      [first_name, last_name, email, phone, hashedPassword]
     );
 
     res.json({ message: 'Customer registered successfully' });

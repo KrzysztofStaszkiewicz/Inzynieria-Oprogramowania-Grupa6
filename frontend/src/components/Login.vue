@@ -33,10 +33,20 @@ const name = ref<string>('');
 const password = ref<string>('');
 
 function register_pressed(){
-  router.push('/register')
+  router.push('/register');
+}
+
+async function get_login() {
+  try{
+    const response = await fetch("http://localhost:6969/user/register", {
+      
+    })
+  } catch(err){
+
+  }
 }
 
 const handleLogin = () => {
-  
+  get_login();
 }
 </script>
