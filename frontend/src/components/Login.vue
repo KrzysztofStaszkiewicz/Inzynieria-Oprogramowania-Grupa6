@@ -17,7 +17,7 @@
       </div>
       <div class="login-form-submit">
         <input type="submit" value="Zaloguj się" class="login-form-submit__input">
-        <a class="login-form-submit__subtext" href="/register">Nie masz konta? Zarejestruj się!</a>
+        <button @click="register_pressed" class="login-form-submit__subtext" href="/register">Nie masz konta? Zarejestruj się!</button>
       </div>
     </form>
   </div>
@@ -25,9 +25,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const name = ref<string>('');
 const password = ref<string>('');
+
+function register_pressed(){
+  router.push('/register')
+}
 
 const handleLogin = () => {
   

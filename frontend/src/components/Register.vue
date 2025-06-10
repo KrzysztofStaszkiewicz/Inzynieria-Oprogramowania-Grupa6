@@ -4,8 +4,8 @@
       <div class="register-form-title">
         <span class="register-form-title__text">Rejestracja</span>
       </div>
-      <div class="register-separator">
-        <hr class="register-separator__hr" />
+      <div class="register-form-separator">
+        <hr class="register-form-separator__hr" />
       </div>
       <div class="register-form-name">
         <div class="register-form-name-first">
@@ -31,7 +31,7 @@
       </div>
       <div class="register-form-submit">
         <input type="submit" value="Zarejestruj się" class="register-form-submit__input">
-        <a class="register-form-submit__subtext" href="/log_in">Masz już konto? Zaloguj się!</a>
+        <button @click="login_pressed" class="register-form-submit__subtext">Masz już konto? Zaloguj się!</button>
       </div>
     </form>
   </div>
@@ -51,6 +51,10 @@ const router = useRouter();
 
 function main_page(){
   router.push('/');
+}
+
+function login_pressed(){
+  router.push('/log_in')
 }
 
 async function put_register(){

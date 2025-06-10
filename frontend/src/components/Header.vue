@@ -21,7 +21,7 @@
           <span class="header-account-login-button__text">Zaloguj się</span>
         </button>
         <div class="header-account-register">
-          <button class="header-account-register-button">
+          <button @click="register_pressed" class="header-account-register-button">
             <span class="header-account-register-button__text">Zarejestruj się</span>
           </button>
         </div>
@@ -45,6 +45,10 @@ function list_pressed(){
 }
 
 function login_pressed(){
-  router.push('log_in')
+  router.push('/log_in')
+}
+
+function register_pressed(){
+  router.push('/register')
 }
 </script>

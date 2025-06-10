@@ -42,6 +42,7 @@
 
             &-button{
                 @include main-font-400;
+                background-color: transparent;
                 
                 &__text{
                     font-size: 1.25rem;
