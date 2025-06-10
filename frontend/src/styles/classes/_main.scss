@@ -45,6 +45,7 @@
           aspect-ratio: 1 / 1;
 
           img{
+            min-width: 100%;
             aspect-ratio: inherit;
           }
         }
@@ -70,7 +71,7 @@
               }
             }
 
-            &-price{
+            &-discount{
               &::after{
                 content: '\20AC';
                 padding-left: 1px;
@@ -83,7 +84,7 @@
               text-align: right;
             }
 
-            &-discount{
+            &-price{
               
               &::after{
                 content: '\20AC';

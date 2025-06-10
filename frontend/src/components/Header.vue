@@ -68,7 +68,7 @@ function main_pressed(){
 }
 
 function list_pressed(){
-  router.push('/lista-wycieczek');
+  router.push('/reservations');
 }
 
 function login_pressed(){
