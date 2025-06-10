@@ -48,7 +48,59 @@ app.put('/user/register', async(req, res) => {
   }
 });
 
-app.put('/user/update_password', async (req, res) => {
+app.post('/user/login', async(req, res) => {
+  const { email, phone, password } = req.body;
+
+  try{
+    let user;
+    if (phone > 0) {
+      user = await pool.query(
+        'SELECT customer_id, password FROM customer WHERE phone_number = $1',
+        [phone]
+      );
+    } else if (email.includes("@")) {
+      user = await pool.query(
+        'SELECT customer_id, password FROM customer WHERE email = $1',
+        [email]
+      );
+    } else {
+      res.status(400).json({ error: 'Email or phone number is required.' });
+      return;
+    }
+
+    if (user.rows.length === 0) {
+      res.status(401).json({ error: 'Niepoprawny email lub numer telefonu' });
+      return;
+    }
+
+    const storedHashedPassword = user.rows[0].password;
+    const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
+
+    if (passwordMatch) {
+      // Passwords match, user is authenticated
+      const result = await pool.query(
+        'SELECT first_name, last_name FROM customer WHERE customer_id = $1',
+        [user.rows[0].customer_id]
+      );
+
+      res.status(200).json({
+        message: 'Login successful',
+        user: {
+          id: user.rows[0].customer_id,
+          first_name: result.rows[0].first_name,
+          last_name: result.rows[0].last_name
+        }
+      });
+    } else {
+      res.status(401).json({ error: 'Niepoprawne haslo' });
+    }
+  } catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Database insert error'});
+  }
+})
+
+app.put('/user/update/password', async (req, res) => {
   const { email, password} = req.body;
 
   try{

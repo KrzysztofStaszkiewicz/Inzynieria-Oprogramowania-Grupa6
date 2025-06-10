@@ -36,17 +36,57 @@ function register_pressed(){
   router.push('/register');
 }
 
-async function get_login() {
+async function get_login(email: string, phone: number) {
   try{
-    const response = await fetch("http://localhost:6969/user/register", {
-      
+    const response = await fetch("http://localhost:6969/user/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email,
+        phone: phone,
+        password: password.value
+      })
     })
-  } catch(err){
 
+    if(response.ok){
+      const user = await response.json();
+
+      console.log("Poprawnie zalogowano!");
+
+      const userData = {
+        id: user.user.id,
+        firstName: user.user.first_name,
+        lastName: user.user.last_name
+      };
+
+      localStorage.setItem('is_logged', 'true');
+      localStorage.setItem('user_data', JSON.stringify(userData));
+
+      router.push('/');
+    }
+    else{
+      // Czyszczenie localStorage w przypadku bledu
+      localStorage.removeItem('is_logged');
+      localStorage.removeItem('user_data');
+    }
+  } catch(err){
+    console.error("Error: ", err);
+    alert('Błąd połączenia z serwerem');  
+
+    // Czyszczenie localStorage w przypadku bledu
+    localStorage.removeItem('is_logged');
+    localStorage.removeItem('user_data');
   }
 }
 
 const handleLogin = () => {
-  get_login();
+  if(name.value.includes("@")){
+    get_login(name.value, -1)
+  }
+  else{
+    get_login('', parseInt(name.value));
+  }
 }
 </script>
