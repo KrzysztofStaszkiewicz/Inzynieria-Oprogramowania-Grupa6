@@ -1,0 +1,117 @@
+@use '../utils/functions.scss' as *;
+@use '../base/typography' as *;
+
+.admin{
+    @include flexCenter;
+
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+
+    &-content{
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+
+        &-title{
+            @include main-font-700;
+            color: var(--main-font-color-200);
+            font-size: 2rem;
+        }
+    
+        &-table{
+            --border-width: 1px;
+            --border-style: solid;
+            --border-color: var(--main-theme-color-300);
+    
+            font-size: 1.5rem;
+            border-collapse: collapse;
+            border-bottom: calc(var(--border-width) * 3) var(--border-style) var(--border-color);
+            
+            th{
+                @include main-font-700;
+            }
+    
+            td{
+                @include main-font-400;
+            }
+    
+            th, td{
+                padding: .25rem .75rem;
+                color: var(--main-font-color-200);
+                border-style: var(--border-style);
+                border-color: var(--border-color);
+                border-bottom-width: var(--border-width);
+            }
+    
+            tr{
+                :first-child{
+                    text-align: center;
+
+                    input{
+                        max-width: 50px;
+                    }
+                }
+    
+                :nth-child(3){
+                    text-align: right;
+
+                    input{
+                        max-width: 50px;
+                    }
+                }
+
+                :nth-child(4){
+                    input{
+                        max-width: 50px;
+                    }
+                }
+            }
+
+            input{
+                border: none;
+                outline: none;
+                font-size: 1.25rem;
+                width: 80%;
+                max-width: 200px;
+            }
+        }
+
+        &-submit{
+            display: flex;
+            justify-content: flex-end;
+
+            &-button{
+                @include main-font-300;
+                font-size: 1.5rem;
+                color: var(--main-font-color-300);
+                background-color: var(--main-theme-color-200);
+                margin-top: .5rem;
+                padding: .5rem .75rem;
+                width: max-content;
+                border-radius: .5rem;
+            }
+        }
+
+        &-order{
+            display: flex;
+            flex-direction: column;
+
+            @include main-font-400;
+            font-size: 1.25rem;
+            color: var(--main-font-color-200);
+
+            select{
+                @include main-font-400;
+                font-size: 1.25rem;
+                color: var(--main-font-color-200);
+            }
+
+            &-product, &-supplier{
+                display: flex;
+                gap: .5rem;
+            }
+
+            
+        }
+    }
+}

@@ -1,6 +1,80 @@
 <template>
   <div v-if="is_admin" class="admin">
-
+    <div v-if="!is_ordering" class="admin-content">
+      <div class="admin-content-title">
+        <span class="admin-content-title__text">Obecny Stan Magazynu:</span>
+      </div>
+      <table class="admin-content-table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nazwa</th>
+            <th>Ilość</th>
+            <th>Jednostka</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in stock_items" :key="item.id">
+            <td>{{ item.item_id }}</td>
+            <td>{{ item.item_name }}</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ item.unit }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="admin-content-submit">
+        <button @click="is_ordering = true" class="admin-content-submit-button">
+          <span class="admin-content-submit-button__text">Złóż zamówienie</span>
+        </button>
+      </div>
+    </div>
+    <div v-else class="admin-content">
+      <div class="admin-content-title">
+        <span class="admin-content-title__text">Zamawiane Produkty</span>
+      </div>
+      <table class="admin-content-table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Nazwa</th>
+            <th>Ilość</th>
+            <th>Jednostka</th>
+            <th>Dostawca</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in ordered_items" :key="item.id">
+            <td><input v-model="item.item_id" type="text"></td>
+            <td><input v-model="item.item_name" type="text"></td>
+            <td><input v-model="item.amount" type="text"></td>
+            <td><input v-model="item.unit" type="text"></td>
+            <td><input v-model="item.supplier"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="admin-content-order">
+        <div class="admin-content-order-product">
+          <span class="admin-content-order-product__text">Produkt:</span>
+          <select v-model="select_add_product_name" class="admin-content-order-product-list">
+            <option v-for="item in stock_items_names" :key="item.item_name" :value="item.item_name">{{ item.item_name }}</option>
+          </select>
+        </div>
+        <div class="admin-content-order-supplier">
+          <span class="admin-content-order-supplier__text">Dostawca:</span>
+          <select v-model="select_add_product_supplier" class="admin-content-order-supplier-list">
+            <option v-for="supplier in suppliers" :key="supplier.supplier_id" :value="supplier.supplier_id">{{ supplier.supplier_name }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-content-submit" style="justify-content: space-between; gap: 2rem">
+        <button @click="add_order_product" class="admin-content-submit-button">
+          <span class="admin-content-submit-button__text">Dodaj Produkt</span>
+        </button>
+        <button @click="post_order_products" class="admin-content-submit-button">
+          <span class="admin-content-submit-button__text">Zamów Produkty</span>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -16,17 +90,37 @@ interface UserData {
 }
 
 interface Item{
-  item: number;
+  id: number;
   name: string;
   amount: number;
   unit: string;
 }
 
+interface OrderedItem{
+  id: number;
+  name: string;
+  amount: number;
+  unit: string;
+  supplier_id: number;
+}
+
+interface Supplier{
+  supplier_id: number;
+  supplier_name: string;
+}
+
 const is_logged = ref<boolean>(false);
 const is_admin = ref<boolean>(false);
+const is_ordering = ref<boolean>(false);
 
 const user_data = ref<UserData | null>(null);
 const stock_items = ref<Item[]>([]);
+const ordered_items = ref<OrderedItem[]>([]);
+const stock_items_names = ref<string[]>([]);
+const suppliers = ref<Supplier[]>([]);
+
+const select_add_product_name = ref<string>('');
+const select_add_product_supplier = ref<string>('');
 
 /**
  * Funkcja: get_is_admin
@@ -107,6 +201,70 @@ async function get_stock(){
   }
 }
 
+async function get_stock_product_names(){
+  if(!is_admin) return;
+  if(!user_data.value) return;
+
+  try{
+    const result = await fetch(`http://localhost:6969/admin/stock/product/names`);
+    const data = await result.json();
+
+    stock_items_names.value = data;
+  } catch(err){
+    console.error("Error: ", err);
+  }
+}
+
+async function get_suppliers() {
+  try{
+    const result = await fetch(`http://localhost:6969/admin/stock/suppliers`);
+    const data = await result.json();
+
+    suppliers.value = data;
+  } catch(err){
+    console.error("Error: ", err);
+  }
+}
+
+function add_order_product(){
+  const newItem: OrderedItem = {
+    item_id: ordered_items.value.length + 1,
+    item_name: select_add_product_name.value,
+    amount: 1,
+    unit: "szt.",
+    supplier_id: select_add_product_supplier.value
+  };
+
+  ordered_items.value.push(newItem);
+}
+
+async function post_order_products(){
+  for(let product of ordered_items.value){
+    console.log(product)
+    try{
+      const result = await fetch(`http://localhost:6969/admin/order/product`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          id: product.item_id,
+          name: product.item_name,
+          amount: product.amount,
+          unit: product.unit,
+          supplier_id: product.supplier_id
+        })
+      });
+
+      if (!result.ok) {
+        console.error("Błąd podczas wysyłania produktu:", product.name);
+      }
+    } catch(err){
+      console.error("Error: ", err);
+    }
+  }
+}
+
 /**
  * Po zamontowaniu komponentu:
  * - Sprawdza, czy użytkownik jest zalogowany, odczytując `is_logged` z localStorage.
@@ -129,6 +287,8 @@ onMounted(() => {
 
         get_is_admin();
         get_stock();
+        get_stock_product_names();
+        get_suppliers();
       } catch(err){
         console.error('Błąd podczas parsowania user_data z localStorage:', err);
 

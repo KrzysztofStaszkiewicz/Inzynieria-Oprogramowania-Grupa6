@@ -52,7 +52,6 @@
           <span class="offer-info-trip-button__text">Anuluj Rezerwację</span>
         </button>
       </div>
-        
     </div>
   </div>
   <Error

@@ -422,6 +422,45 @@ app.get('/admin/stock/get', async (req, res) => {
   }
 })
 
+app.get('/admin/stock/product/names', async (req, res) => {
+  try{
+    const result = await pool.query(`SELECT item_name FROM stock_items`);
+
+    res.json(result.rows);
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ error: "Error podczas pobierania wartosci z stock_items" })
+  }
+})
+
+app.post('/admin/order/product', async (req, res) => {
+  const { id, name, amount, unit, supplier_id } = req.body;
+
+    console.log(supplier_id)
+
+  try{
+    const result = await pool.query(`INSERT INTO "Order" (supplier_id, item_id, date, quantity, status) VALUES ($1, $2, CURRENT_DATE, $3, 'delivered')`,
+      [supplier_id, id, amount]
+    );
+
+    res.json({ confirmed: true });
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ error: "Error podczas pobierania wartosci z stock_items" })
+  }
+})
+
+app.get('/admin/stock/suppliers', async (req, res) => {
+  try{
+    const result = await pool.query(`SELECT supplier_id, supplier_name FROM supplier`);
+
+    res.json(result.rows);
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ error: "Error podczas pobierania wartosci z stock_items" })
+  }
+})
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
