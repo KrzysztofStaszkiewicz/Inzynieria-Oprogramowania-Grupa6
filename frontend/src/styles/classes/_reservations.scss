@@ -2,7 +2,7 @@
 @use '../base/typography' as *;
 
 .reservations{
-  padding: 4rem 0;
+  padding: 4rem 3rem;
 
   &::before{
     content: '';
@@ -18,10 +18,18 @@
     opacity: .2;
   }
 
+  &-title{
+    @include main-font-700;
+    font-size: 2rem;
+
+    display: flex
+  }
+
   &-list{
-    @include flexCenter;
+    display: flex;
     flex-direction: column;
     gap: 2rem;
+    margin-top: 2rem;
 
     &-option{
       background-color: var(--main-theme-color-400);
@@ -108,11 +116,36 @@
         &-button{
           display: block;
           text-align: center;
-          
+
           &__text{
             @include main-font-300;
             color: var(--main-font-color-300);
           }
+        }
+      }
+
+      &-info{
+        grid-row: span 2;
+        margin: auto;
+        padding-right: 1rem;
+        text-align: center;
+
+        &-button{
+          @include main-font-300;
+
+          color: var(--main-font-color-300);
+          background-color: var(--main-theme-color-200);
+          padding: .25rem .5rem;
+          width: min-content;
+          border-radius: .5rem;
+        }
+
+        &-details{
+          @include main-font-300;
+
+          margin-top: .25rem;
+          width: min-content;
+          text-decoration: underline;
         }
       }
     }

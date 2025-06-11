@@ -1,5 +1,11 @@
 <template>
   <div class="reservations">
+    <div class="reservations-title">
+      <span class="reservations-title__text">Lista Moich Rezerwacji</span>
+      <div class="reservations-title-none">
+        <span class="reseravtions-title-none__text">: Brak</span>
+      </div>
+    </div>
     <ul v-if="customer_id != null" class="reservations-list">
       <UserReservationsOffer
         v-for="offer in offers" :key="offer.offer_id" v-bind="offer"
@@ -49,7 +55,7 @@ async function get_offers(){
 }
 
 async function get_customer_id(){
-  if(localStorage.getItem("is_logged") === 'false') router.push('/');
+  if(localStorage.getItem("is_logged") === null) router.push('/');
   else{
     const user_data_raw = localStorage.getItem("user_data");
     if (!user_data_raw) {
