@@ -20,9 +20,24 @@ pool.connect((err, client, release) => {
   release();
 });
 
-app.get('/offers/get', async (req, res) => {
+app.get('/offers/short/get', async (req, res) => {
   try{
-    const result = await pool.query('SELECT * FROM trip_offer LIMIT 3');
+    const result = await pool.query('SELECT o.offer_id AS id, o.name, o.price, o.discount, d.short_description AS description FROM trip_offer o JOIN trip_description d ON o.offer_id = d.offer_id LIMIT 3');
+    res.json(result.rows);
+  } catch(err){
+    console.log(err);
+    res.status(500).json({error: 'Database get offers error'});
+  }
+});
+
+app.get('/offers/full/get/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try{
+    const result = await pool.query(
+      'SELECT o.offer_id AS id, o.name, o.remaining_slots, o.price, o.discount, d.title, d.full_description AS description, d.advantages FROM trip_offer o JOIN trip_description d ON o.offer_id = d.offer_id WHERE o.offer_id = $1',
+      [id]
+    );
     res.json(result.rows);
   } catch(err){
     console.log(err);

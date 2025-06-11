@@ -20,9 +20,9 @@
       </div>
     </div>
     <div class="reservations-list-option-submit">
-      <button class="reservations-list-option-submit-button">
+      <router-link :to="`/offer/${id}`" class="reservations-list-option-submit-button">
         <span class="reservations-list-option-submit-button__text">Złóż rezerwację</span>
-      </button>
+      </router-link>
     </div>
   </li>
 </template>
@@ -32,6 +32,7 @@ import { computed, defineProps, onMounted, ref } from 'vue'
 import fallback_image from '../assets/fallback.png'
 
 interface Offer{
+  id: number;
   name: string;
   description: string;
   price: number;

@@ -100,13 +100,15 @@
       &-submit{
         grid-area: btn;
         margin: auto;
+        padding: .25rem .5rem;
+        width: min-content;
+        background-color: var(--main-theme-color-200);
+        border-radius: .25rem;
 
         &-button{
-          padding: .25rem .5rem;
-          width: min-content;
-          background-color: var(--main-theme-color-200);
-          border-radius: .25rem;
-
+          display: block;
+          text-align: center;
+          
           &__text{
             @include main-font-300;
             color: var(--main-font-color-300);

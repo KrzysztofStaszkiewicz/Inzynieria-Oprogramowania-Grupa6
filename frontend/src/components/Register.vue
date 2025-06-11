@@ -94,7 +94,7 @@ async function put_register(){
         } else {
           alert('Błąd: ' + data.error);
         }
-    } catch (err){
+    } catch(err){
         console.error("Error: ", err);
         alert('Błąd połączenia z serwerem');
     }

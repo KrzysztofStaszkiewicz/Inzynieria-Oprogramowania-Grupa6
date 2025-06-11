@@ -117,7 +117,5 @@ onMounted(() => {
   else{
     user_data.value = null;
   }
-  
-  console.log(user_data.value?.first_name);
 });
 </script>

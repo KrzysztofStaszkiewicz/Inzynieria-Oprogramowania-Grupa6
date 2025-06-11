@@ -3,6 +3,7 @@
     <ul class="reservations-list">
       <ReservationsOffer
         v-for="offer in offers" :key="offer.id"
+        :id="offer.id"
         :name="offer.name"
         :description="offer.description"
         :price="offer.price"
@@ -29,7 +30,7 @@ const offers = ref<Offer[]>([])
 
 async function get_offers(){
     try{
-        const response = await fetch("http://localhost:6969/offers/get");
+        const response = await fetch("http://localhost:6969/offers/short/get");
         const data = await response.json();
         offers.value = data;
     } catch (err){

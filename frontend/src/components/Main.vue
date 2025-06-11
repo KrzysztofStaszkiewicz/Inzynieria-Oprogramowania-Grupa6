@@ -31,7 +31,7 @@ const offers = ref<Offer[]>([])
 
 async function get_offers(){
     try{
-        const response = await fetch("http://localhost:6969/offers/get");
+        const response = await fetch("http://localhost:6969/offers/short/get");
         const data = await response.json();
         offers.value = data;
     } catch (err){
