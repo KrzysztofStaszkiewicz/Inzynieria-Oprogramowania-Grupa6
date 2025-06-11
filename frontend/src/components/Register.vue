@@ -53,6 +53,18 @@ function login_pressed(){
   router.push('/log_in');
 }
 
+/**
+ * Watcher obserwujący zmiany w zmiennej `phone` (string).
+ * 
+ * Zadania watchera:
+ * 1. Zapewnia, że do pola wprowadzany jest tylko ciąg cyfr lub znak '-'.
+ *    - Jeśli ostatni znak nie jest cyfrą ani '-', zostaje usunięty.
+ * 2. Automatycznie dodaje lub usuwa znak '-' w odpowiednich miejscach, aby format telefonu wyglądał następująco:
+ *    - Po 3 i 7 znakach wstawiany jest lub usuwany separator '-'.
+ * 3. Pamięta poprzednią wartość `phone` w zmiennej `old_phone`, aby wiedzieć, czy użytkownik dodaje czy usuwa znaki i odpowiednio manipulować tekstem.
+ * 
+ * Przykładowy format telefonu: `123-456-789`
+ */
 let old_phone:string = '';
 watch(phone, (value:string) => {
   // Upewnia sie ze wpisywana jest tylko cyfra
@@ -70,7 +82,15 @@ watch(phone, (value:string) => {
   old_phone = value;
 })
 
-// Funkcja służy do zarejestrowania klienta w bazie danych
+/**
+ * Asynchroniczna funkcja służy do zarejestrowania nowego klienta w bazie danych.
+ *
+ * - Wysyła zapytanie PUT do endpointu `/user/register` z danymi rejestracyjnymi użytkownika.
+ * - Dane wysyłane w formacie JSON obejmują: imię, nazwisko, email, numer telefonu (po usunięciu myślnika), oraz hasło.
+ * - Po udanej rejestracji przekierowuje użytkownika na stronę logowania (`/log_in`) i wyświetla alert z potwierdzeniem.
+ * - W przypadku błędu zwracanego przez serwer wyświetla alert z komunikatem błędu.
+ * - W przypadku błędu połączenia z serwerem wypisuje błąd w konsoli i wyświetla alert informujący o problemie.
+ */
 async function put_register(){
     try{
         const response = await fetch("http://localhost:6969/user/register", {

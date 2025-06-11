@@ -36,7 +36,17 @@ function register_pressed(){
   router.push('/register');
 }
 
-// Połączenie API z bazą danych sprawdzające czy użytkownik o takim loginie i haśle istnieje, jeśli istnieje następuje wczytanie danych użytkownika
+/**
+ * Wysyła zapytanie do API logowania użytkownika na podstawie podanego emaila lub numeru telefonu oraz hasła.
+ * 
+ * @param {string} email - Adres e-mail użytkownika do logowania.
+ * @param {number} phone - Numer telefonu użytkownika do logowania.
+ * 
+ * Funkcja wysyła metodą POST dane logowania (email, phone, password) do endpointu `/user/login`.
+ * Jeśli logowanie zakończy się sukcesem, pobiera dane użytkownika, zapisuje status logowania
+ * oraz dane użytkownika w localStorage, a następnie przekierowuje na stronę główną i odświeża stronę.
+ * W przypadku błędu lub niepoprawnych danych usuwa odpowiednie dane z localStorage i wyświetla alert.
+ */
 async function get_login(email: string, phone: number) {
   try{
     const response = await fetch("http://localhost:6969/user/login", {

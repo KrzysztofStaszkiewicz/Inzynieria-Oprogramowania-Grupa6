@@ -44,7 +44,17 @@ const props = defineProps<Offer>();
 const image_src = ref<string>('');
 const image_alt = computed(() => `${props.name} Image`);
 
-// Anulowanie rezerwacji
+/**
+ * Funkcja asynchroniczna służąca do anulowania rezerwacji rejsu.
+ * 
+ * Wysyła żądanie HTTP DELETE do API, przekazując identyfikatory klienta i oferty
+ * pobrane z właściwości `props.customer_id` i `props.offer_id`.
+ * 
+ * Po pomyślnym anulowaniu rezerwacji wywołuje zdarzenie `cancelled`, przekazując `offer_id`
+ * do komponentu nadrzędnego.
+ * 
+ * W przypadku błędu podczas komunikacji z serwerem, wyświetla komunikat w konsoli.
+ */
 async function cancel_reservation(){
   console.log(props.customer_id, props.offer_id);
   

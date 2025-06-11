@@ -28,7 +28,13 @@ interface Offer{
 
 const offers = ref<Offer[]>([])
 
-// Zwraca obecnie dostępne oferty rejsów
+/**
+ * Funkcja asynchroniczna pobierająca z serwera listę aktualnie dostępnych ofert rejsów.
+ * 
+ * Wysyła zapytanie HTTP GET pod endpoint `/offers/short/get`.
+ * Po poprawnym otrzymaniu odpowiedzi ustawia zmienną `offers` na otrzymane dane.
+ * W przypadku błędu wypisuje go w konsoli.
+ */
 async function get_offers(){
     try{
         const response = await fetch("http://localhost:6969/offers/short/get");

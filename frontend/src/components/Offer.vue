@@ -77,7 +77,17 @@ const is_reserved = ref<boolean>(false);
 const show_error = ref<boolean>(false);
 const error_text = ref<string>("Musisz być zalogowany aby złożyć rezerwację.");
 
-// Funkcja służy do zarezerwowania rejsu
+/**
+ * Funkcja służy do zarezerwowania rejsu przez zalogowanego użytkownika.
+ *
+ * Sprawdza, czy użytkownik jest zalogowany na podstawie wartości w localStorage.
+ * Jeśli nie jest zalogowany, ustawia flagę błędu i przerywa działanie funkcji.
+ * Pobiera dane użytkownika z localStorage, w tym `customer_id`.
+ * Pobiera `offer_id` z aktualnie wybranej oferty (`offer.value`).
+ * Wysyła zapytanie PUT do API, aby dodać rezerwację.
+ * Po potwierdzeniu rezerwacji aktualizuje lokalny stan (`is_reserved`) oraz zmniejsza liczbę dostępnych miejsc.
+ * W przypadku błędów wyświetla odpowiednie komunikaty w konsoli.
+ */
 async function reserve_trip() {
   // Upewnia się że użytkownik jest zalogowany
   if(localStorage.getItem("is_logged") === null || localStorage.getItem("is_logged") === "false"){
@@ -126,7 +136,15 @@ async function reserve_trip() {
   }
 }
 
-// Anulowanie rezerwacji przez użytkownika
+/**
+ * Anuluje rezerwację aktualnie wybranej oferty przez zalogowanego użytkownika.
+ *
+ * Funkcja odczytuje dane użytkownika z localStorage, w tym jego `customer_id`.
+ * Pobiera `offer_id` z bieżącej oferty (`offer.value`).
+ * Następnie wysyła żądanie DELETE do endpointu API, aby anulować rezerwację.
+ * Po udanym anulowaniu aktualizuje lokalny stan rezerwacji oraz liczbę dostępnych miejsc.
+ * W przypadku błędów wyświetla odpowiednie komunikaty w konsoli.
+ */
 async function cancel_reservation() {
   if (!offer.value) return;
 
@@ -169,6 +187,17 @@ async function cancel_reservation() {
   }
 }
 
+/**
+ * Funkcja asynchroniczna pobierająca szczegółowe dane oferty rejsu na podstawie ID z parametru trasy.
+ *
+ * - Pobiera parametr `id` z aktualnej trasy (`route.params.id`).
+ * - Wysyła zapytanie GET do API, aby pobrać pełne dane oferty.
+ * - Przypisuje pierwszy wynik odpowiedzi do zmiennej `offer.value`.
+ * - Jeśli oferta nie zostanie znaleziona (brak danych), wypisuje błąd w konsoli i przerywa działanie.
+ * - Dzieli opis oferty na fragmenty po separatorze "//" i zapisuje je w `descriptions.value`.
+ * - Dzieli zalety oferty po separatorze "//" i zapisuje je w `advantages.value`.
+ * - W przypadku błędów podczas pobierania lub przetwarzania danych loguje je do konsoli.
+ */
 async function get_offer(){
   try{
     const id = route.params.id;
@@ -188,6 +217,15 @@ async function get_offer(){
   }
 }
 
+/**
+ * Asynchroniczna funkcja ładuje obrazek dla aktualnej oferty.
+ *
+ * - Sprawdza, czy istnieje aktualna oferta (`offer.value`).
+ * - Jeśli nie, funkcja kończy działanie.
+ * - Próbuje dynamicznie zaimportować obrazek na podstawie nazwy oferty (w małych literach) z katalogu `assets/places`.
+ * - Jeśli obrazek zostanie znaleziony, przypisuje jego źródło do `image_src.value` oraz ustawia tekst alternatywny `image_alt.value`.
+ * - W przypadku braku pliku obrazka wyświetla ostrzeżenie i ustawia `image_src.value` na domyślny obraz zastępczy (`fallback_image`).
+ */
 async function get_image() {
   if(!offer.value) return;
 
@@ -201,6 +239,19 @@ async function get_image() {
   }
 }
 
+/**
+ * Asynchroniczna funkcja sprawdza, czy zalogowany użytkownik
+ * potwierdził rezerwację dla aktualnej oferty.
+ *
+ * - Jeśli aktualna oferta (`offer.value`) nie istnieje, funkcja kończy działanie.
+ * - Pobiera dane użytkownika z `localStorage` i parsuje je do obiektu.
+ * - Pobiera `customer_id` z danych użytkownika.
+ * - Weryfikuje, czy `customer_id` jest poprawną liczbą dodatnią.
+ * - Wysyła zapytanie GET do endpointu API w celu sprawdzenia, czy rezerwacja dla danego
+ *   `customer_id` i `offer.value.id` istnieje i jest potwierdzona.
+ * - Ustawia wartość reaktywnej zmiennej `is_reserved` na podstawie wyniku odpowiedzi (`data.confirmed`).
+ * - W przypadku błędu loguje go do konsoli.
+ */
 async function get_reservation_confirm() {
   if(!offer.value) return;
 
