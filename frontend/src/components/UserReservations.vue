@@ -3,7 +3,7 @@
     <div class="reservations-title">
       <span class="reservations-title__text">Lista Moich Rezerwacji</span>
       <div class="reservations-title-none">
-        <span class="reseravtions-title-none__text">: Brak</span>
+        <span v-if="offers[0] == null" class="reseravtions-title-none__text">: Brak</span>
       </div>
     </div>
     <ul v-if="customer_id != null" class="reservations-list">
@@ -44,6 +44,7 @@ function remove_reservation(offer_id: number) {
   offers.value = offers.value.filter(offer => offer.offer_id !== offer_id);
 }
 
+// Zwraca zarezerwowane juz podroze przez klienta
 async function get_offers(){
   try{
     const response = await fetch(`http://localhost:6969/user/reservation/get/${customer_id.value}`);
@@ -54,8 +55,10 @@ async function get_offers(){
   }
 }
 
+// zwraca id klienta
 async function get_customer_id(){
-  if(localStorage.getItem("is_logged") === null) router.push('/');
+  // powrot na glowna strone jesli klient nie jest zalogowany
+  if(localStorage.getItem("is_logged") === null || localStorage.getItem("is_logged") === "false") router.push('/');
   else{
     const user_data_raw = localStorage.getItem("user_data");
     if (!user_data_raw) {

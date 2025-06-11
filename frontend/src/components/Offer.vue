@@ -38,12 +38,19 @@
       </button>
     </div>
   </div>
+  <Error
+    v-if="show_error"
+    :text="error_text"
+    @close="show_error = false"
+  >
+  </Error>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
+import Error from './Error.vue';
 import fallback_image from '../assets/fallback.png'
 
 interface Offer{
@@ -67,7 +74,15 @@ const advantages = ref<string[]>([]);
 
 const is_reserved = ref<boolean>(false);
 
+const show_error = ref<boolean>(false);
+const error_text = ref<string>("Musisz być zalogowany aby złożyć rezerwację.");
+
 async function reserve_trip() {
+  if(localStorage.getItem("is_logged") === null || localStorage.getItem("is_logged") === "false"){
+    show_error.value = true;
+    return;
+  };
+
   if (!offer.value) return;
 
   const user_data_raw = localStorage.getItem("user_data");

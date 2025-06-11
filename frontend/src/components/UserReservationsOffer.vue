@@ -44,6 +44,7 @@ const props = defineProps<Offer>();
 const image_src = ref<string>('');
 const image_alt = computed(() => `${props.name} Image`);
 
+// Anulowanie rezerwacji
 async function cancel_reservation(){
   console.log(props.customer_id, props.offer_id);
   

@@ -1,0 +1,38 @@
+@use '../base/typography' as *;
+
+.error{
+  position: fixed;
+  top: 0;
+  left: 50%;
+  translate: -50% 50%;
+  background-color: var(--main-error-color-100);
+  color: var(--main-font-color-300);
+  padding-left: 1rem;
+  padding-right: 1.5rem;
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  border-radius: .5rem;
+  animation: show_error .5s ease-in-out;
+
+  &__text{
+    @include main-font-400;
+    color: var(--main-font-color-300);
+  }
+
+  i{
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: .25rem;
+    cursor: pointer;
+  }
+
+  @keyframes show_error{
+    0%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 1;
+    }
+  }
+}
