@@ -73,6 +73,12 @@
     @close="show_r_confirm = false"
   >
   </Confirm>
+  <Confirm
+    v-if="show_cancel"
+    :text="cancel_text"
+    @close="show_cancel = false"
+  >
+  </Confirm>
 </template>
 
 <script setup lang="ts">
@@ -111,6 +117,9 @@ const confirm_text = ref<string>("Poprawnie zarejestrowano rejs.")
 
 const show_r_confirm = ref<boolean>(false);
 const confirm_r_text = ref<string>("Poprawnie zarejestrowano miejsca w restauracji.")
+
+const show_cancel = ref<boolean>(false);
+const cancel_text = ref<string>("Poprawnie anulowano rezerwację.");
 
 const show_error = ref<boolean>(false);
 const error_text = ref<string>("Musisz być zalogowany aby złożyć rezerwację.");
@@ -219,6 +228,8 @@ async function cancel_reservation() {
     if (data.cancelled) {
       is_reserved.value = false;
       offer.value.remaining_slots++;
+
+      show_cancel.value = true;
     } else {
       console.warn("Nie udało się anulować rezerwacji.");
     }

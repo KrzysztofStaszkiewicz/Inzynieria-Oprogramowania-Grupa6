@@ -244,12 +244,41 @@ app.put('/user/reservation/seats/:customer_id/:offer_id/:num_seats', async(req, 
       [customer_id, offer_id, num_seats]
     );
 
-    console.log(result.rows[0])
-
     res.json({ confirmed: true });
   } catch (err) {
     console.error('Błąd przy usuwaniu rezerwacji:', err);
     res.status(500).json({ error: 'Błąd bazy danych' });
+  }
+})
+
+/**
+ * Endpoint: GET /user/role/:customer_id
+ *
+ * Opis:
+ * Ten endpoint zwraca rolę użytkownika w systemie na podstawie jego identyfikatora (customer_id).
+ * Rola użytkownika może określać jego uprawnienia w aplikacji, np. czy jest to zwykły klient, administrator itp.
+ *
+ * Parametry:
+ * - `customer_id` (URL param) – unikalny identyfikator użytkownika (klienta), którego rola ma zostać pobrana.
+ *
+ * Działanie:
+ * - Wysyła zapytanie SQL do tabeli `customer`, aby pobrać wartość pola `role` dla wskazanego `customer_id`.
+ * - Jeśli zapytanie się powiedzie, zwraca wynik jako tablicę JSON (np. `[ { role: 'admin' } ]`).
+ * - W przypadku błędu (np. błąd połączenia z bazą danych) zwraca status 500 z komunikatem o błędzie.
+ */
+app.get('/user/role/:customer_id', async(req, res) => {
+  const { customer_id } = req.params;
+
+  try{
+    const result = await pool.query(
+      `SELECT role FROM customer WHERE customer_id = $1`,
+      [customer_id]
+    )
+
+    res.json(result.rows);
+  } catch(err){
+    console.error("Błąd podczas zwracania wyniku roli użytkownika w systemie: ", err);
+    res.status(500).json({ error: 'Błąd bazy danych' })
   }
 })
 
