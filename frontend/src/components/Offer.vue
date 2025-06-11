@@ -77,7 +77,9 @@ const is_reserved = ref<boolean>(false);
 const show_error = ref<boolean>(false);
 const error_text = ref<string>("Musisz być zalogowany aby złożyć rezerwację.");
 
+// Funkcja służy do zarezerwowania rejsu
 async function reserve_trip() {
+  // Upewnia się że użytkownik jest zalogowany
   if(localStorage.getItem("is_logged") === null || localStorage.getItem("is_logged") === "false"){
     show_error.value = true;
     return;
@@ -85,6 +87,7 @@ async function reserve_trip() {
 
   if (!offer.value) return;
 
+  // Importuje dane użytkownika z localStorage do postaci JSON
   const user_data_raw = localStorage.getItem("user_data");
   if (!user_data_raw) {
     console.warn("Brak danych użytkownika w localStorage.");
@@ -100,6 +103,7 @@ async function reserve_trip() {
     return;
   }
 
+  // Połączenie API
   try {
     const response = await fetch(`http://localhost:6969/user/reservation/put/${customer_id}/${offer_id}`, {
       method: "PUT",
@@ -122,9 +126,11 @@ async function reserve_trip() {
   }
 }
 
+// Anulowanie rezerwacji przez użytkownika
 async function cancel_reservation() {
   if (!offer.value) return;
 
+  // Importuje dane użytkownika z localStorage do postaci JSON
   const user_data_raw = localStorage.getItem("user_data");
   if (!user_data_raw) {
     console.warn("Brak danych użytkownika w localStorage.");
@@ -140,6 +146,7 @@ async function cancel_reservation() {
     return;
   }
 
+  // Połączenie API
   try {
     const response = await fetch(`http://localhost:6969/user/reservation/delete/${customer_id}/${offer_id}`, {
       method: "DELETE",

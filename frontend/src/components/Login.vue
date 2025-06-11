@@ -36,6 +36,7 @@ function register_pressed(){
   router.push('/register');
 }
 
+// Połączenie API z bazą danych sprawdzające czy użytkownik o takim loginie i haśle istnieje, jeśli istnieje następuje wczytanie danych użytkownika
 async function get_login(email: string, phone: number) {
   try{
     const response = await fetch("http://localhost:6969/user/login", {
@@ -84,6 +85,7 @@ async function get_login(email: string, phone: number) {
 }
 
 const handleLogin = () => {
+  // Sprwadza czy podany przez użytkownika został email, czy numer telefonu
   if(name.value.includes("@")){
     get_login(name.value, -1)
   }

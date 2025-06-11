@@ -12,6 +12,7 @@ app.use(express.json());
 
 const pool = new Pool({ connectionString: process.env.DB_URL });
 
+// Połączenie z bazą danych
 pool.connect((err, client, release) => {
   if (err) {
     return console.error('Błąd połączenia z bazą:', err.stack);
@@ -20,6 +21,7 @@ pool.connect((err, client, release) => {
   release();
 });
 
+// Zwraca pokrótce dane na temat oferty rejsu
 app.get('/offers/short/get', async (req, res) => {
   try{
     const result = await pool.query('SELECT o.offer_id AS id, o.name, o.price, o.discount, d.short_description AS description FROM trip_offer o JOIN trip_description d ON o.offer_id = d.offer_id LIMIT 3');
@@ -30,6 +32,7 @@ app.get('/offers/short/get', async (req, res) => {
   }
 });
 
+// Zwraca szczegółowe dane na temat oferty rejsu
 app.get('/offers/full/get/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -45,6 +48,7 @@ app.get('/offers/full/get/:id', async (req, res) => {
   }
 });
 
+// Sprawdza czy rejs (offer_id) został przez danego użytkownika (customer_id) zarezerwowany
 app.get('/user/reservation/confirm/:customer_id/:offer_id', async(req, res) => {
   const { customer_id, offer_id } = req.params;
 
@@ -67,6 +71,7 @@ app.get('/user/reservation/confirm/:customer_id/:offer_id', async(req, res) => {
   }
 });
 
+// Połączenie API służące do dodania do bazy danych rezerwacji rejsu (offer_id) przez klienta (customer_id)
 app.put('/user/reservation/put/:customer_id/:offer_id', async(req, res) => {
   const { customer_id, offer_id } = req.params;
 
@@ -84,6 +89,7 @@ app.put('/user/reservation/put/:customer_id/:offer_id', async(req, res) => {
   }
 })
 
+// Zwraca informacje na temat rejsów już zarezerwowanych przez danego klienta (customer_id)
 app.get('/user/reservation/get/:customer_id', async(req, res) => {
   const { customer_id } = req.params;
   
@@ -104,6 +110,7 @@ app.get('/user/reservation/get/:customer_id', async(req, res) => {
   }
 })
 
+// Usunięcie rekordu rezerwacji rejsu (offer_id) z bazy danych przez klienta (customer_id)
 app.delete('/user/reservation/delete/:customer_id/:offer_id', async (req, res) => {
   const { customer_id, offer_id } = req.params;
 
@@ -124,10 +131,12 @@ app.delete('/user/reservation/delete/:customer_id/:offer_id', async (req, res) =
   }
 });
 
+// Połączenie API służące do zarejestrowania użytkownika w bazie danych
 app.put('/user/register', async(req, res) => {
   const { first_name, last_name, email, phone, password } = req.body;
 
   try{
+    // Hasło użytkownika jest hashowane w celu zwiększenia bezpieczeństwa
     const hashedPassword = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS || '10'));
 
     const result = await pool.query(
@@ -142,11 +151,14 @@ app.put('/user/register', async(req, res) => {
   }
 });
 
+// Połącznie API służące do zalogowania do systemu przez użytkownika
 app.post('/user/login', async(req, res) => {
   const { email, phone, password } = req.body;
 
   try{
     let user;
+
+    // Sprawdza czy nastąpiło logowanie za pomocą numeru telefonu, czy za pomocą emailu
     if (phone > 0) {
       user = await pool.query(
         'SELECT customer_id, password FROM customer WHERE phone_number = $1',
@@ -167,11 +179,11 @@ app.post('/user/login', async(req, res) => {
       return;
     }
 
+    // Sprawdzane jest czy hasło jest zgodne z tym zabezpieczonym w bazie danych
     const storedHashedPassword = user.rows[0].password;
     const passwordMatch = await bcrypt.compare(password, storedHashedPassword);
 
     if (passwordMatch) {
-      // Passwords match, user is authenticated
       const result = await pool.query(
         'SELECT first_name, last_name FROM customer WHERE customer_id = $1',
         [user.rows[0].customer_id]
@@ -194,6 +206,7 @@ app.post('/user/login', async(req, res) => {
   }
 })
 
+// Połączenie API służące do zmiany hasła przez użytkownika
 app.put('/user/update/password', async (req, res) => {
   const { email, password} = req.body;
 

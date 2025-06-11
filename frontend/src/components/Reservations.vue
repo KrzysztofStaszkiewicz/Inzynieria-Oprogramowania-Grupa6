@@ -28,6 +28,7 @@ interface Offer{
 
 const offers = ref<Offer[]>([])
 
+// Zwraca obecnie dostępne oferty rejsów
 async function get_offers(){
     try{
         const response = await fetch("http://localhost:6969/offers/short/get");

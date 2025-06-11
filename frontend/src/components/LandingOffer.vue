@@ -37,6 +37,7 @@ const image_src = ref<string>('');
 const image_alt = computed(() => `${props.name} Image`);
 
 onMounted(async () => {
+  // Import zdjęcia oferty po załadowaniu strony
   try{
     const image = await import(`../assets/places/${props.name.toLowerCase()}.png`);
     image_src.value = image.default;

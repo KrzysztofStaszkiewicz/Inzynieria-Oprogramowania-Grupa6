@@ -61,6 +61,7 @@ watch(phone, (value:string) => {
     return;
   }
 
+  // Manipuluje tekstem inputa tak aby był zgodny z jego formatem
   if(value.length == 3 || value.length == 7){
     if(value.length > old_phone.length) phone.value = phone.value + "-";
     else if(value.length < old_phone.length) phone.value = phone.value.slice(0, -1);
@@ -69,6 +70,7 @@ watch(phone, (value:string) => {
   old_phone = value;
 })
 
+// Funkcja służy do zarejestrowania klienta w bazie danych
 async function put_register(){
     try{
         const response = await fetch("http://localhost:6969/user/register", {

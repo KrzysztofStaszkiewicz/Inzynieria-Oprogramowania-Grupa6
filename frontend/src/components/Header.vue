@@ -98,6 +98,7 @@ function log_out(){
 onMounted(() => {
   is_logged.value = localStorage.getItem('is_logged') === 'true';
 
+  // Import imienia i nazwiska użytkownika w przypadku, gdy jest zalogowany
   if(is_logged.value){
     const stored_user_data = localStorage.getItem("user_data");
     
