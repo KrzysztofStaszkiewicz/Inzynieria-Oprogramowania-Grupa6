@@ -12,7 +12,14 @@ app.use(express.json());
 
 const pool = new Pool({ connectionString: process.env.DB_URL });
 
-// Połączenie z bazą danych
+/**
+ * Próbuje nawiązać połączenie z bazą danych przy starcie aplikacji.
+ * 
+ * Jeśli połączenie się powiedzie, wypisuje "Połączono z bazą danych!".
+ * Jeśli wystąpi błąd, wypisuje szczegóły błędu do konsoli.
+ * 
+ * Po sprawdzeniu połączenia natychmiast zwalnia klienta z puli.
+ */
 pool.connect((err, client, release) => {
   if (err) {
     return console.error('Błąd połączenia z bazą:', err.stack);
@@ -21,7 +28,18 @@ pool.connect((err, client, release) => {
   release();
 });
 
-// Zwraca pokrótce dane na temat oferty rejsu
+/**
+ * Zwraca podstawowe informacje o maksymalnie 3 ofertach rejsów.
+ * 
+ * Zwracane pola w tablicy obiektów:
+ * - id (offer_id),
+ * - name,
+ * - price,
+ * - discount,
+ * - description (krótki opis).
+ * 
+ * W przypadku błędu zwraca status 500 i komunikat o błędzie.
+ */
 app.get('/offers/short/get', async (req, res) => {
   try{
     const result = await pool.query('SELECT o.offer_id AS id, o.name, o.price, o.discount, d.short_description AS description FROM trip_offer o JOIN trip_description d ON o.offer_id = d.offer_id LIMIT 3');
@@ -32,7 +50,24 @@ app.get('/offers/short/get', async (req, res) => {
   }
 });
 
-// Zwraca szczegółowe dane na temat oferty rejsu
+/**
+ * Zwraca szczegółowe dane o ofercie rejsu na podstawie jej ID.
+ * 
+ * Parametry URL:
+ * - id: identyfikator oferty (offer_id)
+ * 
+ * Zwraca tablicę z obiektem zawierającym pola:
+ * - id (offer_id),
+ * - name,
+ * - remaining_slots,
+ * - price,
+ * - discount,
+ * - title,
+ * - description (pełny opis),
+ * - advantages.
+ * 
+ * W przypadku błędu zwraca status 500 i komunikat o błędzie.
+ */
 app.get('/offers/full/get/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -48,7 +83,19 @@ app.get('/offers/full/get/:id', async (req, res) => {
   }
 });
 
-// Sprawdza czy rejs (offer_id) został przez danego użytkownika (customer_id) zarezerwowany
+/**
+ * Sprawdza, czy dany klient ma potwierdzoną rezerwację konkretnego rejsu.
+ * 
+ * Parametry URL:
+ * - customer_id: identyfikator klienta
+ * - offer_id: identyfikator oferty/rejsu
+ * 
+ * Zwraca obiekt JSON z polem `confirmed`:
+ * - true, jeśli istnieje potwierdzona rezerwacja,
+ * - false, jeśli nie.
+ * 
+ * W przypadku błędu zwraca status 500 i komunikat o błędzie.
+ */
 app.get('/user/reservation/confirm/:customer_id/:offer_id', async(req, res) => {
   const { customer_id, offer_id } = req.params;
 
@@ -71,7 +118,20 @@ app.get('/user/reservation/confirm/:customer_id/:offer_id', async(req, res) => {
   }
 });
 
-// Połączenie API służące do dodania do bazy danych rezerwacji rejsu (offer_id) przez klienta (customer_id)
+/**
+ * Dodaje nową rezerwację rejsu do bazy danych dla danego klienta.
+ * 
+ * Parametry URL:
+ * - customer_id: identyfikator klienta
+ * - offer_id: identyfikator oferty/rejsu
+ * 
+ * Rezerwacja jest dodawana z aktualną datą (`CURRENT_DATE`), jednym miejscem (`seats = 1`) i statusem `'confirmed'`.
+ * Zwraca JSON z polem `confirmed`:
+ * - true, gdy rezerwacja została pomyślnie dodana,
+ * - false, gdy dodanie się nie powiodło.
+ * 
+ * W przypadku błędu zwraca status 500 i komunikat o błędzie.
+ */
 app.put('/user/reservation/put/:customer_id/:offer_id', async(req, res) => {
   const { customer_id, offer_id } = req.params;
 
@@ -89,7 +149,16 @@ app.put('/user/reservation/put/:customer_id/:offer_id', async(req, res) => {
   }
 })
 
-// Zwraca informacje na temat rejsów już zarezerwowanych przez danego klienta (customer_id)
+/**
+ * Pobiera listę rejsów zarezerwowanych przez danego klienta.
+ * 
+ * Parametry URL:
+ * - customer_id: numer identyfikujący klienta
+ * 
+ * Zwraca tablicę obiektów rejsów (`trip_offer`) wraz z ich opisem (`short_description` z `trip_description`) oraz `customer_id`.
+ * 
+ * W przypadku błędu zwraca status 500 i informację o błędzie.
+ */
 app.get('/user/reservation/get/:customer_id', async(req, res) => {
   const { customer_id } = req.params;
   
@@ -110,7 +179,20 @@ app.get('/user/reservation/get/:customer_id', async(req, res) => {
   }
 })
 
-// Usunięcie rekordu rezerwacji rejsu (offer_id) z bazy danych przez klienta (customer_id)
+/**
+ * Usuwa potwierdzoną rezerwację rejsu dla danego klienta.
+ * 
+ * Parametry URL:
+ * - customer_id: numer identyfikujący klienta
+ * - offer_id: numer identyfikujący ofertę/rejs
+ * 
+ * Usuwa rekord z tabeli `reservation`, gdzie status to 'confirmed'.
+ * Zwraca JSON z polem `cancelled`:
+ * - true, jeśli rezerwacja została usunięta
+ * - false, jeśli nie znaleziono pasującej rezerwacji
+ * 
+ * W przypadku błędu zwraca status 500 i informację o błędzie.
+ */
 app.delete('/user/reservation/delete/:customer_id/:offer_id', async (req, res) => {
   const { customer_id, offer_id } = req.params;
 
@@ -131,7 +213,19 @@ app.delete('/user/reservation/delete/:customer_id/:offer_id', async (req, res) =
   }
 });
 
-// Połączenie API służące do zarejestrowania użytkownika w bazie danych
+/**
+ * Endpoint rejestracji nowego użytkownika.
+ * 
+ * Oczekuje w ciele żądania JSON z polami:
+ * - first_name: string — imię użytkownika
+ * - last_name: string — nazwisko użytkownika
+ * - email: string — adres email
+ * - phone: string lub number — numer telefonu
+ * - password: string — hasło w formacie niezaszyfrowanym
+ * 
+ * Hasło jest hashowane i zapisywane w bazie danych.
+ * Zwraca JSON z komunikatem o sukcesie lub błędzie serwera.
+ */
 app.put('/user/register', async(req, res) => {
   const { first_name, last_name, email, phone, password } = req.body;
 
@@ -151,7 +245,21 @@ app.put('/user/register', async(req, res) => {
   }
 });
 
-// Połącznie API służące do zalogowania do systemu przez użytkownika
+/**
+ * Endpoint logowania użytkownika.
+ * 
+ * Oczekuje w ciele żądania JSON z polami:
+ * - email: string (opcjonalnie, jeśli nie jest podany numer telefonu)
+ * - phone: string lub number (opcjonalnie, jeśli nie jest podany email)
+ * - password: string — hasło użytkownika
+ * 
+ * Logowanie działa na podstawie emaila lub numeru telefonu.
+ * Jeśli dane są poprawne, zwraca dane użytkownika (id, imię, nazwisko) wraz z komunikatem o sukcesie.
+ * W przeciwnym razie zwraca odpowiednie błędy:
+ * - 400, gdy brak emaila i telefonu
+ * - 401, gdy użytkownik nie istnieje lub hasło jest niepoprawne
+ * - 500, gdy wystąpi błąd serwera/bazy danych
+ */
 app.post('/user/login', async(req, res) => {
   const { email, phone, password } = req.body;
 
@@ -206,7 +314,16 @@ app.post('/user/login', async(req, res) => {
   }
 })
 
-// Połączenie API służące do zmiany hasła przez użytkownika
+/**
+ * Aktualizuje hasło użytkownika o podanym emailu.
+ * 
+ * Oczekuje w ciele żądania JSON z polami:
+ * - email: string — adres email użytkownika
+ * - password: string — nowe hasło w formacie niezaszyfrowanym
+ * 
+ * Hasło zostaje zahashowane i zapisane w bazie.
+ * Zwraca JSON z komunikatem o sukcesie lub błędzie.
+ */
 app.put('/user/update/password', async (req, res) => {
   const { email, password} = req.body;
 
