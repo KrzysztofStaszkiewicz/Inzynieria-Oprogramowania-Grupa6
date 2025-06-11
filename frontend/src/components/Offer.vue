@@ -1,5 +1,8 @@
 <template>
   <div v-if="offer" class="offer">
+    <div class="offer__image">
+      <img :src="image_src" :alt="image_alt">
+    </div>
     <div class="offer-title">
       <span class="offer-title__text">{{ offer.name }} - {{ offer.title }}</span>
     </div>
@@ -8,8 +11,8 @@
         <span class="offer-content-description__text">{{ descriptions[0] }}</span>
       </div>
       <div class="offer-content-advantages">
+        Podczas wycieczki:
         <ul class="offer-content-advantages-list">
-          Podczas wycieczki:
           <li v-for="advantage in advantages" :key="advantage" class="offer-content-advantages-list-option">
             <span class="offer-content-advantages-list-option__text">{{ advantage }}</span>
           </li>
@@ -27,6 +30,9 @@
         <span v-if="offer.discount > 0" class="offer-info-price__text">{{ Math.floor(offer.price - offer.price * offer.discount / 100) }}</span>
         <span v-else class="offer-into-price__text">{{ offer.price }}</span>
       </div>
+      <button class="offer-info-button">
+        <span class="offer-info-button__text">Zarezerwuj</span>
+      </button>
     </div>
   </div>
 </template>
@@ -34,6 +40,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+
+import fallback_image from '../assets/fallback.png'
 
 interface Offer{
   id: number;
@@ -45,6 +53,9 @@ interface Offer{
   description: string;
   advantages: string;
 }
+
+const image_src = ref<string>('');
+const image_alt = ref<string>('');
 
 const route = useRoute();
 const offer = ref<Offer>();
@@ -70,7 +81,23 @@ async function get_offer(){
   }
 }
 
-onMounted(() => {
-  get_offer();
+async function get_image() {
+  console.log(offer.value);
+
+  if(!offer.value) return;
+
+  try{
+    const image = await import(`../assets/places/${offer.value.name.toLowerCase()}.png`);
+    image_src.value = image.default;
+    image_alt.value = offer.value.name + " Image";
+  } catch (err){
+    console.warn(`Could not find image: ${offer.value.name.toLowerCase()}.png`);
+    image_src.value = fallback_image;
+  }
+}
+
+onMounted(async () => {
+  await get_offer();
+  await get_image();
 })
 </script>
