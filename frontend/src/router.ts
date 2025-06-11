@@ -8,6 +8,7 @@ import Register from './components/Register.vue';
 import Reservations from './components/Reservations.vue';
 import Offer from './components/Offer.vue';
 import UserReservations from './components/UserReservations.vue';
+import Admin from './components/Admin.vue';
 
 const routes: RouteRecordRaw[] = [
   { path: '/', component: Main },
@@ -15,7 +16,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/register', component: Register },
   { path: '/reservations', component: Reservations },
   { path: '/user/reservations', component: UserReservations },
-  { path: '/offer/:id', component: Offer }
+  { path: '/offer/:id', component: Offer },
+  { path: '/admin', component: Admin }
 ];
 
 const router = createRouter({

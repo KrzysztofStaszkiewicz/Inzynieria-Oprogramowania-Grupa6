@@ -411,6 +411,17 @@ app.put('/user/update/password', async (req, res) => {
   }
 });
 
+app.get('/admin/stock/get', async (req, res) => {
+  try{
+    const result = await pool.query(`SELECT * FROM stock_items`);
+
+    res.json(result.rows);
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ error: "Error podczas pobierania wartosci z stock_items" })
+  }
+})
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

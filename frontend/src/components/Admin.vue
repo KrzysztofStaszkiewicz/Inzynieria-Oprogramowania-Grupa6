@@ -1,6 +1,6 @@
 <template>
   <div v-if="is_admin" class="admin">
-    
+
   </div>
 </template>
 
@@ -15,10 +15,18 @@ interface UserData {
   last_name: string;
 }
 
+interface Item{
+  item: number;
+  name: string;
+  amount: number;
+  unit: string;
+}
+
 const is_logged = ref<boolean>(false);
 const is_admin = ref<boolean>(false);
 
 const user_data = ref<UserData | null>(null);
+const stock_items = ref<Item[]>([]);
 
 /**
  * Funkcja: get_is_admin
@@ -59,12 +67,54 @@ async function get_is_admin(){
 }
 
 /**
+ * Funkcja: get_stock
+ *
+ * Opis:
+ * Pobiera dane o stanie magazynowym (np. zapasy, produkty) z serwera, ale tylko jeśli
+ * zalogowany użytkownik posiada uprawnienia administratora (`is_admin`).
+ *
+ * Warunki działania:
+ * - Funkcja kończy działanie, jeśli użytkownik nie ma roli administratora (`!is_admin`).
+ * - Funkcja kończy działanie, jeśli dane użytkownika nie są dostępne (`!user_data.value`).
+ *
+ * Działanie:
+ * - Wysyła zapytanie GET do endpointu `/admin/stock/get` znajdującego się na lokalnym serwerze.
+ * - Po otrzymaniu odpowiedzi przypisuje dane (np. listę produktów) do reaktywnej zmiennej `stock_items`.
+ * - W przypadku błędu wyświetla go w konsoli.
+ *
+ * Zastosowanie:
+ * Używana np. w panelu administracyjnym do wyświetlenia aktualnego stanu zapasów, edycji produktów itp.
+ *
+ * Przykład odpowiedzi z API:
+ * ```json
+ * [
+ *   { "item_id": 1, "name": "Woda", "quantity": 120 },
+ *   { "item_id": 2, "name": "Sok pomarańczowy", "quantity": 45 }
+ * ]
+ * ```
+ */
+async function get_stock(){
+  if(!is_admin) return;
+  if(!user_data.value) return;
+
+  try{
+    const result = await fetch(`http://localhost:6969/admin/stock/get`);
+    const data = await result.json();
+
+    stock_items.value = data;
+  } catch(err){
+    console.error("Error: ", err);
+  }
+}
+
+/**
  * Po zamontowaniu komponentu:
  * - Sprawdza, czy użytkownik jest zalogowany, odczytując `is_logged` z localStorage.
  * - Jeśli jest zalogowany, próbuje wczytać dane użytkownika z `user_data` i sparsować je do obiektu.
  * - W przypadku błędu parsowania usuwa dane i oznacza użytkownika jako niezalogowanego.
  * - Jeśli użytkownik nie jest zalogowany, zeruje dane użytkownika.
  * - Jeśli użytkownik nie jest administratorem, to przenosi go do strony głównej.
+ * - Jeśli użytkownik jest administratorem pobiera stan magazynu z bazy danych.
  */
 onMounted(() => {
   is_logged.value = localStorage.getItem('is_logged') === 'true';
@@ -76,6 +126,9 @@ onMounted(() => {
     if(stored_user_data){
       try{
         user_data.value = JSON.parse(stored_user_data) as UserData;
+
+        get_is_admin();
+        get_stock();
       } catch(err){
         console.error('Błąd podczas parsowania user_data z localStorage:', err);
 
@@ -85,8 +138,6 @@ onMounted(() => {
         user_data.value = null;
       }
     }
-
-    get_is_admin();
   }
   else{
     user_data.value = null;
