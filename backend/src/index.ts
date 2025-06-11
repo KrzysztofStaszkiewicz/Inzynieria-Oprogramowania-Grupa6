@@ -214,6 +214,46 @@ app.delete('/user/reservation/delete/:customer_id/:offer_id', async (req, res) =
 });
 
 /**
+ * Aktualizuje liczbę zarezerwowanych miejsc (seats) dla danego klienta i oferty rejsu.
+ * 
+ * Endpoint: PUT /user/reservation/seats/:customer_id/:offer_id/:num_seats
+ * 
+ * Parametry URL:
+ * - customer_id (number) — ID klienta dokonującego rezerwacji.
+ * - offer_id (number) — ID oferty rejsu, której dotyczy rezerwacja.
+ * - num_seats (number) — nowa liczba miejsc do ustawienia w rezerwacji.
+ * 
+ * Działanie:
+ * - Aktualizuje kolumnę `seats` w tabeli `reservation` dla rekordu odpowiadającego podanemu `customer_id` i `offer_id`.
+ * 
+ * Odpowiedź:
+ * - Jeśli aktualizacja powiodła się (rekord istnieje i został zmodyfikowany), zwraca JSON: { confirmed: true }.
+ * - Jeśli nie znaleziono pasującego rekordu lub aktualizacja się nie powiodła, zwraca JSON: { confirmed: false }.
+ * - W przypadku błędu serwera zwraca status HTTP 500 i JSON z komunikatem o błędzie.
+ * 
+ * Przykład wywołania:
+ * PUT http://localhost:6969/user/reservation/seats/123/456/3
+ * - aktualizuje rezerwację klienta o ID 123 dla oferty 456 na 3 miejsca.
+ */
+app.put('/user/reservation/seats/:customer_id/:offer_id/:num_seats', async(req, res) => {
+  const { customer_id, offer_id, num_seats } = req.params;
+
+  try {
+    const result = await pool.query(
+      `UPDATE reservation SET seats = $3 WHERE customer_id = $1 AND offer_id = $2`,
+      [customer_id, offer_id, num_seats]
+    );
+
+    console.log(result.rows[0])
+
+    res.json({ confirmed: true });
+  } catch (err) {
+    console.error('Błąd przy usuwaniu rezerwacji:', err);
+    res.status(500).json({ error: 'Błąd bazy danych' });
+  }
+})
+
+/**
  * Endpoint rejestracji nowego użytkownika.
  * 
  * Oczekuje w ciele żądania JSON z polami:

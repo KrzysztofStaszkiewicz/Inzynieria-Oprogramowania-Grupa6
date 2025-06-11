@@ -90,31 +90,53 @@
 
   &-info{
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: .5rem;
+    justify-content: space-between;
     margin-top: 1rem;
-    padding-right: 3rem;
+    padding-left: var(--padding-x);
+    padding-right: var(--padding-x);
 
-    &-price{
-      @include main-font-400;
+    &-trip, &-restaurant{
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+      &-price{
+        @include main-font-400;
 
-      font-size: 1.25rem;
+        font-size: 1.25rem;
 
-      &::after{
-        content: '\20AC';
-        padding-left: 1px;
+        &::after{
+          content: '\20AC';
+          padding-left: 1px;
+        }
       }
-    }
 
-    &-button{
-      @include main-font-300;
-      font-size: 1.25rem;
-      color: var(--main-font-color-300);
+      &-button{
+        @include main-font-300;
+        font-size: 1.25rem;
+        color: var(--main-font-color-300);
 
-      background-color: var(--main-theme-color-200);
-      padding: .75rem 2rem;
-      border-radius: .25rem;
+        background-color: var(--main-theme-color-200);
+        padding: .75rem 2rem;
+        border-radius: .25rem;
+      }
+
+      &-list{
+        @include main-font-400;
+        color: var(--main-font-color-200);
+
+        font-size: 1.25rem;
+        padding: .5rem;
+      }
+
+      &-cancel{
+        @include main-font-300;
+        font-size: 1rem;
+        text-decoration: underline;
+
+        &__text{
+          cursor: pointer;
+        }
+      }
     }
   }
 }

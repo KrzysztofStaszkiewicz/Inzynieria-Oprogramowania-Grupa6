@@ -25,17 +25,34 @@
     <div class="offer-slots">
       <span class="offer-slots__text">Liczba Pozostałych Miejsc: {{ offer.remaining_slots }}</span>
     </div>
-    <div class="offer-info">
-      <div class="offer-info-price">
-        <span v-if="offer.discount > 0" class="offer-info-price__text">{{ Math.floor(offer.price - offer.price * offer.discount / 100) }}</span>
-        <span v-else class="offer-into-price__text">{{ offer.price }}</span>
+    <div class="offer-info" :class="{ 'flex-end': !is_reserved }">
+      <div v-if="is_reserved" class="offer-info-restaurant">
+        <button v-if="!is_reserving_table" @click="is_reserving_table = true" class="offer-info-restaurant-button">
+          <span class="offer-info-restaurant-button_text">Zarezerwuj Stolik</span>
+        </button>
+        <button @click="reserve_seats" v-if="is_reserving_table" class="offer-info-restaurant-button">
+          <span class="offer-info-restaurant-button__text">Potwierdź</span>
+        </button>
+        <select v-if="is_reserving_table" v-model="selected_seats" class="offer-info-restaurant-list">
+          <option v-for="n in 8" :key="n" :value="n" class="offer-info-restaurant-list__option">{{ n }}</option>
+        </select>
+        <div v-if="is_reserving_table" @click="is_reserving_table = false" class="offer-info-restaurant-cancel">
+          <span class="offer-info-restaurant-cancel__text">Anuluj</span>
+        </div>
       </div>
-      <button @click="reserve_trip" v-if="!is_reserved" :disabled="offer.remaining_slots <= 0 ? true : false" class="offer-info-button">
-        <span class="offer-info-button__text">Zarezerwuj</span>
-      </button>
-      <button @click="cancel_reservation" v-else class="offer-info-button">
-        <span class="offer-info-button__text">Anuluj Rezerwację</span>
-      </button>
+      <div class="offer-info-trip">
+        <div class="offer-info-trip-price">
+          <span v-if="offer.discount > 0" class="offer-info-trip-price__text">{{ Math.floor(offer.price - offer.price * offer.discount / 100) }}</span>
+          <span v-else class="offer-info-trip-price__text">{{ offer.price }}</span>
+        </div>
+        <button @click="reserve_trip" v-if="!is_reserved" :disabled="offer.remaining_slots <= 0 ? true : false" class="offer-info-trip-button">
+          <span class="offer-info-trip-button__text">Zarezerwuj</span>
+        </button>
+        <button @click="cancel_reservation" v-else class="offer-info-trip-button">
+          <span class="offer-info-trip-button__text">Anuluj Rezerwację</span>
+        </button>
+      </div>
+        
     </div>
   </div>
   <Error
@@ -44,6 +61,18 @@
     @close="show_error = false"
   >
   </Error>
+  <Confirm
+    v-if="show_confirm"
+    :text="confirm_text"
+    @close="show_confirm = false"
+  >
+  </Confirm>
+  <Confirm
+    v-if="show_r_confirm"
+    :text="confirm_r_text"
+    @close="show_r_confirm = false"
+  >
+  </Confirm>
 </template>
 
 <script setup lang="ts">
@@ -51,6 +80,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import Error from './Error.vue';
+import Confirm from './Confirm.vue';
 import fallback_image from '../assets/fallback.png'
 
 interface Offer{
@@ -73,6 +103,14 @@ const descriptions = ref<string[]>([]);
 const advantages = ref<string[]>([]);
 
 const is_reserved = ref<boolean>(false);
+const is_reserving_table = ref<boolean>(false);
+const selected_seats = ref<number>(1);
+
+const show_confirm = ref<boolean>(false);
+const confirm_text = ref<string>("Poprawnie zarejestrowano rejs.")
+
+const show_r_confirm = ref<boolean>(false);
+const confirm_r_text = ref<string>("Poprawnie zarejestrowano miejsca w restauracji.")
 
 const show_error = ref<boolean>(false);
 const error_text = ref<string>("Musisz być zalogowany aby złożyć rezerwację.");
@@ -131,6 +169,8 @@ async function reserve_trip() {
     } else {
       console.warn("Rezerwacja nie została potwierdzona.");
     }
+
+    show_confirm.value = true;
   } catch (err) {
     console.error("Błąd podczas rezerwacji:", err);
   }
@@ -268,6 +308,56 @@ async function get_reservation_confirm() {
     const data = await response.json();
 
     is_reserved.value = data.confirmed;
+  } catch(err){
+    console.error("Error: ", err);
+  }
+}
+
+/**
+ * Funkcja służy do zarezerwowania miejsc w restauracji w ramach wcześniej zarezerwowanego rejsu.
+ * 
+ * Warunki działania:
+ * - Rejs musi być wcześniej zarezerwowany (`is_reserved` musi być true).
+ * - Dane użytkownika muszą znajdować się w localStorage pod kluczem "user_data".
+ * 
+ * Działanie:
+ * - Funkcja odczytuje `customer_id` z localStorage.
+ * - Wysyła żądanie PUT do API `/user/reservation/seats/:customer_id/:offer_id/:num_seats`,
+ *   aby zaktualizować liczbę zarezerwowanych miejsc w restauracji dla konkretnego rejsu.
+ * - Po pomyślnym potwierdzeniu aktualizacji (data.confirmed === true), ukrywa formularz rezerwacji stołu.
+ * 
+ * Zmienne używane:
+ * - `offer.value` — zawiera aktualnie wybraną ofertę rejsu.
+ * - `selected_seats.value` — liczba miejsc, które użytkownik chce zarezerwować.
+ * - `is_reserved` — informacja czy rejs został wcześniej zarezerwowany.
+ * - `is_reserving_table.value` — kontroluje widoczność interfejsu rezerwacji stolika.
+ */
+async function reserve_seats(){
+  if(!offer.value) return;
+
+  if(!is_reserved){
+    console.error("Nie mozna razejestrowac miejsc w restauracji, bez uprzedniego zarejestrowania rejsu.");
+    return;
+  }
+
+  const user_data_raw = localStorage.getItem("user_data");
+  if (!user_data_raw) return;
+
+  const user_data = JSON.parse(user_data_raw);
+  const customer_id = user_data.id;
+
+  if(isNaN(customer_id) || customer_id < 0) return;
+  
+  try{
+    const response = await fetch(`http://localhost:6969/user/reservation/seats/${customer_id}/${offer.value.id}/${selected_seats.value}`,{
+      method: 'PUT'
+    });
+    const data = await response.json();
+
+    if(data.confirmed){
+      is_reserving_table.value = false;
+      show_r_confirm.value = true;
+    }
   } catch(err){
     console.error("Error: ", err);
   }

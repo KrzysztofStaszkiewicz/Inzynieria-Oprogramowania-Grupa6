@@ -1,6 +1,6 @@
 <template>
-  <div class="error message">
-    <span class="error__text">{{ props.text }}</span>
+  <div class="confirm message">
+    <span class="confirm__text">{{ props.text }}</span>
     <i @click="hide_error" class="fa-solid fa-xmark"></i>
   </div>
 </template>
