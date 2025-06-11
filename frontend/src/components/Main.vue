@@ -5,7 +5,8 @@
     <div class="main-offers">
         <ul class="main-offers-list">
             <LandingOffer
-                v-for="offer in offers" :key="offer.id" 
+                v-for="offer in offers" :key="offer.id"
+                :id="offer.id"
                 :name="offer.name" 
                 :price="offer.price" 
                 :discount="offer.discount" >

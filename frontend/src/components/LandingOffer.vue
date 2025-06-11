@@ -13,9 +13,9 @@
       <div v-if="discount > 0" class="main-offers-list-option-content-discount">
         <span class="main-offers-list-option-content-discount__text">{{ Math.floor(price - price * discount / 100) }}</span>
       </div>
-      <button class="main-offers-list-option-content-button">
+      <router-link :to="`/offer/${id}`" class="main-offers-list-option-content-button">
         <span class="main-offers-list-option-content-button__text">Złóż rezerwację</span>
-      </button>
+      </router-link>
     </div>
   </li>
 </template>
@@ -25,6 +25,7 @@ import { computed, defineProps, onMounted, ref } from 'vue'
 import fallback_image from '../assets/fallback.png'
 
 interface Offer{
+  id: number;
   name: string;
   price: number;
   discount: number;
