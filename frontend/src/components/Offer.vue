@@ -30,10 +30,10 @@
         <span v-if="offer.discount > 0" class="offer-info-price__text">{{ Math.floor(offer.price - offer.price * offer.discount / 100) }}</span>
         <span v-else class="offer-into-price__text">{{ offer.price }}</span>
       </div>
-      <button v-if="!is_reserved" class="offer-info-button">
+      <button @click="reserve_trip" v-if="!is_reserved" :disabled="offer.remaining_slots <= 0 ? true : false" class="offer-info-button">
         <span class="offer-info-button__text">Zarezerwuj</span>
       </button>
-      <button v-else class="offer-info-button">
+      <button @click="cancel_reservation" v-else class="offer-info-button">
         <span class="offer-info-button__text">Anuluj Rezerwację</span>
       </button>
     </div>
@@ -66,6 +66,86 @@ const descriptions = ref<string[]>([]);
 const advantages = ref<string[]>([]);
 
 const is_reserved = ref<boolean>(false);
+
+async function reserve_trip() {
+  if (!offer.value) return;
+
+  const user_data_raw = localStorage.getItem("user_data");
+  if (!user_data_raw) {
+    console.warn("Brak danych użytkownika w localStorage.");
+    return;
+  }
+
+  const user_data = JSON.parse(user_data_raw);
+  const customer_id = user_data.id;
+  const offer_id = offer.value.id;
+
+  if (isNaN(customer_id) || isNaN(offer_id)) {
+    console.error("Błędne ID klienta lub oferty.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:6969/user/reservation/put/${customer_id}/${offer_id}`, {
+      method: "PUT",
+    });
+
+    if (!response.ok) {
+      throw new Error("Błąd odpowiedzi z serwera");
+    }
+
+    const data = await response.json();
+
+    if (data.confirmed) {
+      is_reserved.value = true;
+      offer.value.remaining_slots--;
+    } else {
+      console.warn("Rezerwacja nie została potwierdzona.");
+    }
+  } catch (err) {
+    console.error("Błąd podczas rezerwacji:", err);
+  }
+}
+
+async function cancel_reservation() {
+  if (!offer.value) return;
+
+  const user_data_raw = localStorage.getItem("user_data");
+  if (!user_data_raw) {
+    console.warn("Brak danych użytkownika w localStorage.");
+    return;
+  }
+
+  const user_data = JSON.parse(user_data_raw);
+  const customer_id = user_data.id;
+  const offer_id = offer.value.id;
+
+  if (isNaN(customer_id) || isNaN(offer_id)) {
+    console.error("Błędne ID klienta lub oferty.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:6969/user/reservation/delete/${customer_id}/${offer_id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Błąd odpowiedzi z serwera");
+    }
+
+    const data = await response.json();
+
+    if (data.cancelled) {
+      is_reserved.value = false;
+      offer.value.remaining_slots++;
+    } else {
+      console.warn("Nie udało się anulować rezerwacji.");
+    }
+  } catch (err) {
+    console.error("Błąd podczas anulowania rezerwacji:", err);
+  }
+}
 
 async function get_offer(){
   try{

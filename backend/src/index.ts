@@ -67,6 +67,63 @@ app.get('/user/reservation/confirm/:customer_id/:offer_id', async(req, res) => {
   }
 });
 
+app.put('/user/reservation/put/:customer_id/:offer_id', async(req, res) => {
+  const { customer_id, offer_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO reservation (customer_id, date, seats, status, offer_id) VALUES ($1, CURRENT_DATE, 1, 'confirmed', $2) RETURNING *`,
+      [customer_id, offer_id]
+    );
+
+    if(result.rows[0]) res.json({ confirmed: true });
+    else res.json({ confirmed: false });
+  } catch (err) {
+    console.error('Błąd zapytania:', err);
+    res.status(500).json({ error: 'Błąd bazy danych' });
+  }
+})
+
+app.get('/user/reservation/get/:customer_id', async(req, res) => {
+  const { customer_id } = req.params;
+  
+  try {
+    const result = await pool.query(
+      `SELECT t.*, d.short_description AS description, r.customer_id
+      FROM trip_offer t
+      JOIN reservation r ON t.offer_id = r.offer_id
+      JOIN trip_description d ON t.offer_id = d.offer_id
+      WHERE r.customer_id = $1`,
+      [customer_id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Błąd zapytania:', err);
+    res.status(500).json({ error: 'Błąd bazy danych' });
+  }
+})
+
+app.delete('/user/reservation/delete/:customer_id/:offer_id', async (req, res) => {
+  const { customer_id, offer_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM reservation WHERE customer_id = $1 AND offer_id = $2 AND status = 'confirmed' RETURNING *`,
+      [customer_id, offer_id]
+    );
+
+    if (result.rowCount && result.rowCount > 0) {
+      res.json({ cancelled: true });
+    } else {
+      res.json({ cancelled: false });
+    }
+  } catch (err) {
+    console.error('Błąd przy usuwaniu rezerwacji:', err);
+    res.status(500).json({ error: 'Błąd bazy danych' });
+  }
+});
+
 app.put('/user/register', async(req, res) => {
   const { first_name, last_name, email, phone, password } = req.body;
 
