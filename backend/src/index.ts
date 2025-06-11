@@ -45,6 +45,28 @@ app.get('/offers/full/get/:id', async (req, res) => {
   }
 });
 
+app.get('/user/reservation/confirm/:customer_id/:offer_id', async(req, res) => {
+  const { customer_id, offer_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT EXISTS (
+         SELECT 1
+         FROM reservation
+         WHERE customer_id = $1
+           AND offer_id = $2
+           AND status = 'confirmed'
+       ) AS exists`,
+      [customer_id, offer_id]
+    );
+
+    res.json({ confirmed: result.rows[0].exists });
+  } catch (err) {
+    console.error('Błąd zapytania:', err);
+    res.status(500).json({ error: 'Błąd bazy danych' });
+  }
+});
+
 app.put('/user/register', async(req, res) => {
   const { first_name, last_name, email, phone, password } = req.body;
 
